@@ -1358,7 +1358,7 @@
       let patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
       if (patients.length === 0) {
         const initialId = 'pt_' + Date.now();
-        patients.push({ id: initialId, name: 'Yeni Hasta' });
+        patients.push({ id: initialId, name: 'Yeni Erkek Hasta' });
         localStorage.setItem('ft_patient_list', JSON.stringify(patients));
         currentPatientId = initialId;
       } else {
@@ -1380,7 +1380,7 @@
     function createNewPatient() {
       const newId = 'pt_' + Date.now();
       let patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
-      patients.unshift({ id: newId, name: 'Yeni Hasta' });
+      patients.unshift({ id: newId, name: 'Yeni Erkek Hasta' });
       localStorage.setItem('ft_patient_list', JSON.stringify(patients));
       currentPatientId = newId;
       localStorage.setItem('ft_active_patient_id', newId);
