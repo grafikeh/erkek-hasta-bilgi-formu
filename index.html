@@ -3,1667 +3,1681 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dr. Ayşe Betül - Fonksiyonel Tıp Erkek Hasta Bilgi Formu</title>
+  <title>Dr. Ayşe Betül ATİK - Erkek Hasta Değerlendirme Formu</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome Icons -->
+  <!-- FontAwesome İkon Seti -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
           colors: {
-            klinik: {
+            medgreen: {
               50: '#f4f7ee',
-              100: '#e6edd8',
-              500: '#618930',
-              600: '#527528',
-              700: '#436121',
-              800: '#344c19',
-              bg: '#fcfaf5'
+              100: '#e6efd8',
+              500: '#587c29', /* Görseldeki ana zeytin yeşili */
+              600: '#486621',
+              700: '#38501a',
             }
           }
         }
       }
     }
   </script>
-
   <style>
-    /* Özel Form ve Yazdırma Stilleri */
-    body {
-      background-color: #fcfaf5;
-      color: #2d3748;
-    }
-    input, select, textarea {
-      transition: all 0.2s ease-in-out;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #618930;
-      box-shadow: 0 0 0 3px rgba(97, 137, 48, 0.2);
-    }
-    /* Gizli Bölümler */
-    .step-content {
-      display: none;
-    }
-    .step-content.active {
-      display: block;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    /* Yazdırma Modu */
     @media print {
-      body { background-color: #ffffff; }
       .no-print { display: none !important; }
-      .step-content { display: block !important; margin-bottom: 2rem; page-break-after: always; }
-      .print-border { border: 1px solid #cbd5e1 !important; }
+      .print-show { display: block !important; }
+      .form-section { display: block !important; margin-bottom: 2.5rem; page-break-inside: avoid; }
+      body { background: white !important; font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .shadow-sm, .shadow-md, .shadow-lg { box-shadow: none !important; }
+      border { border-color: #cbd5e1 !important; }
     }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans antialiased text-gray-800">
+<body class="bg-[#fcfaf7] text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-medgreen-100">
 
-  <!-- ÜST KLİNİK BAŞLIĞI & HASTA YÖNETİM ÇUBUĞU -->
-  <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+  <!-- ÜST SABİT BAŞLIK VE HASTA YÖNETİM ÇUBUĞU (NO-PRINT) -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Logo ve Başlık -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-[#587c29] text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          <i class="fa-solid fa-notes-medical"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+            Dr. Ayşe Betül ATİK
+          </h1>
+          <p class="text-xs text-[#587c29] font-semibold">
+            Erkek Hasta Değerlendirme Formu
+          </p>
+        </div>
+      </div>
+
+      <!-- Hasta Yönetimi & Butonlar -->
+      <div class="flex items-center flex-wrap gap-2">
         
-        <!-- Logo / Doktor Bilgisi -->
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full bg-klinik-500 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-            AB
-          </div>
-          <div>
-            <h1 class="text-base sm:text-lg font-bold text-gray-900 leading-tight">Dr. Ayşe Betül Klinik</h1>
-            <p class="text-xs text-klinik-600 font-semibold tracking-wide uppercase">Fonksiyonel Tıp Erkek Hasta Değerlendirme Formu</p>
-          </div>
+        <!-- Hasta Seçim Listesi -->
+        <div class="relative">
+          <select id="patientSelector" onchange="switchPatient(this.value)" class="text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-[#587c29]">
+            <!-- Dinamik doldurulur -->
+          </select>
         </div>
 
-        <!-- Hasta Seçici & Aksiyonlar -->
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="relative">
-            <select id="patientSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm rounded-lg px-3 py-2 pr-8 font-medium">
-              <!-- JS ile doldurulacak -->
-            </select>
-          </div>
+        <!-- Yeni Hasta Ekle -->
+        <button onclick="createNewPatient()" class="px-2.5 py-1.5 bg-[#587c29] hover:bg-[#486621] text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center space-x-1">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Yeni</span>
+        </button>
 
-          <button onclick="createNewPatientPrompt()" class="bg-klinik-500 hover:bg-klinik-600 text-white text-xs sm:text-sm px-3 py-2 rounded-lg font-medium flex items-center gap-1.5 transition shadow-sm">
-            <i class="fa-solid fa-user-plus"></i>
-            <span>Yeni Hasta</span>
-          </button>
+        <!-- Hasta Sil Butonu -->
+        <button onclick="deleteCurrentPatient()" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold rounded-lg shadow-xs transition flex items-center space-x-1" title="Seçili Hastayı Sil">
+          <i class="fa-solid fa-trash-can"></i>
+          <span class="hidden sm:inline">Sil</span>
+        </button>
 
-          <button onclick="savePatientData(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm px-3 py-2 rounded-lg font-medium flex items-center gap-1.5 transition shadow-sm">
-            <i class="fa-solid fa-floppy-disk"></i>
-            <span>Kaydet</span>
-          </button>
+        <!-- PDF Olarak Kaydet / Yazdır -->
+        <button onclick="exportAsPDF()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center space-x-1">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>PDF Olarak Aktar</span>
+        </button>
 
-          <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 text-xs sm:text-sm px-3 py-2 rounded-lg font-medium flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-print"></i>
-            <span>Yazdır / PDF</span>
-          </button>
-
-          <!-- Otomatik Kayıt Rozeti -->
-          <span id="autoSaveBadge" class="text-[11px] text-gray-500 bg-gray-100 px-2 py-1 rounded border flex items-center gap-1">
-            <i class="fa-solid fa-check text-green-600"></i> Otomatik Kaydedildi
-          </span>
+        <!-- Canlı Kayıt Göstergesi -->
+        <div id="saveStatus" class="text-[11px] font-medium text-slate-400 pl-2 flex items-center space-x-1">
+          <i class="fa-solid fa-circle-check text-[#587c29]"></i>
+          <span class="hidden md:inline">Kaydedildi</span>
         </div>
+
+      </div>
+
+    </div>
+
+    <!-- YATAY MODÜL ADIMLARI (Numaralı & İkonlu Butonlar) -->
+    <div class="bg-slate-50/90 border-t border-slate-200 overflow-x-auto scrollbar-none py-2 px-4">
+      <div class="max-w-7xl mx-auto flex space-x-2 text-xs font-semibold whitespace-nowrap" id="tabContainer">
+        
+        <button type="button" onclick="goToTab(0)" class="tab-btn px-4 py-2 rounded-xl border-2 flex items-center space-x-2 transition shadow-sm bg-[#587c29] text-white border-[#486621]">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-white text-[#587c29] font-bold">1</span>
+          <i class="fa-solid fa-address-card"></i>
+          <span>Genel Bilgiler</span>
+        </button>
+
+        <button type="button" onclick="goToTab(1)" class="tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold">2</span>
+          <i class="fa-solid fa-file-medical text-slate-500"></i>
+          <span>Şikayet & Bristol</span>
+        </button>
+
+        <button type="button" onclick="goToTab(2)" class="tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold">3</span>
+          <i class="fa-solid fa-moon text-slate-500"></i>
+          <span>Stres & Uyku</span>
+        </button>
+
+        <button type="button" onclick="goToTab(3)" class="tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold">4</span>
+          <i class="fa-solid fa-utensils text-slate-500"></i>
+          <span>Beslenme</span>
+        </button>
+
+        <button type="button" onclick="goToTab(4)" class="tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold">5</span>
+          <i class="fa-solid fa-users text-slate-500"></i>
+          <span>Sosyal & Denge</span>
+        </button>
+
+        <button type="button" onclick="goToTab(5)" class="tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold">6</span>
+          <i class="fa-solid fa-notes-medical text-slate-500"></i>
+          <span>Hastalıklar & Aile</span>
+        </button>
+
+        <button type="button" onclick="goToTab(6)" class="tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm">
+          <span class="step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold">7</span>
+          <i class="fa-solid fa-comment-dots text-slate-500"></i>
+          <span>Sistemler & Düşünceler</span>
+        </button>
 
       </div>
     </div>
   </header>
 
-  <!-- YATAY STEPPER (İLERLEME VE GEZİNME ÇUBUĞU) -->
-  <nav class="bg-white border-b border-gray-200 no-print overflow-x-auto shadow-inner">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div id="stepperNav" class="flex whitespace-nowrap py-3 gap-2">
-        <!-- JS ile 7 Adım Dinamik Üretilir -->
+  <!-- FORM ANA GÖVDESİ -->
+  <main class="max-w-5xl mx-auto p-4 sm:p-6 w-full flex-1">
+    
+    <!-- YAZDIRMA BAŞLIĞI (PDF Önizlemesinde Çıkar) -->
+    <div class="hidden print-show mb-6 border-b pb-4">
+      <h1 class="text-2xl font-bold text-slate-900">Dr. Ayşe Betül ATİK - Fonksiyonel Tıp Kliniği</h1>
+      <h2 class="text-base text-slate-600">Erkek Hasta Ayrıntılı Değerlendirme ve Anamnez Formu</h2>
+      <div class="mt-2 text-xs text-slate-500 flex justify-between">
+        <span id="printPatientName">Hasta: -</span>
+        <span id="printDate">Tarih: -</span>
       </div>
     </div>
-  </nav>
 
-  <!-- FORM ANA GÖVDESİ -->
-  <main class="flex-grow max-w-5xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-    <form id="anamnezForm" onsubmit="event.preventDefault();" class="space-y-6">
+    <form id="anamnezForm" class="space-y-6">
 
-      <!-- ========================================================================= -->
-      <!-- STEP 1: GENEL BİLGİLER & İLETİŞİM (Sayfa 1-2) -->
-      <!-- ========================================================================= -->
-      <section id="step1" class="step-content active bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-id-card"></i>
-            <span>1. Genel Bilgiler & İletişim</span>
-          </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 1 - 2: Kimlik, demografik ve iletişim kayıtları</p>
-        </div>
+      <!-- ========================================== -->
+      <!-- MODÜL 1: KİMLİK, İLETİŞİM & ADRES -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6" data-step="0">
+        
+        <!-- Temel Bilgiler (Yeşil Blok Başlık) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-address-card text-2xl"></i>
+              <h2 class="text-lg font-bold">1. Genel Bilgiler & İletişim</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">Kimlik, demografik ve iletişim kayıtları</p>
+          </div>
 
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Adınız & Soyad *</label>
-              <input type="text" name="adSoyad" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: Mehmet Yılmaz" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Yaş *</label>
-              <input type="number" name="yas" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: 42" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">E-Posta Adresi *</label>
-              <input type="email" name="email" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="ornek@posta.com" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Boy (cm) *</label>
-              <input type="number" name="boy" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: 178" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Cep Telefonu *</label>
-              <input type="tel" name="telefon" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="05XX XXX XX XX" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Kilo (kg) *</label>
-              <input type="number" name="kilo" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: 82" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Doğum Tarihi *</label>
-              <input type="date" name="dogumTarihi" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" required>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Meslek *</label>
-              <input type="text" name="meslek" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: Mühendis, Yönetici...">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Şehir *</label>
-              <input type="text" name="sehir" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: İstanbul">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">İlçe *</label>
-              <input type="text" name="ilce" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Örn: Kadıköy">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Ev / İkamet Adresi *</label>
-              <textarea name="adres" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Mahalle, Cadde, Sokak, No..."></textarea>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">İş Telefonu</label>
-              <input type="tel" name="isTelefonu" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">İş Adresi</label>
-              <input type="text" name="isAdresi" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Size Ulaşamadığımızda Ulaşabileceğimiz Kişi ve Telefonu *</label>
-              <input type="text" name="acilKisi" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Yakınlık derecesi, Ad Soyad ve İletişim Numarası">
+          <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Adınız & Soyad *</label>
+                <input type="text" name="adSoyad" placeholder="Örn: Mehmet Yılmaz" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Yaş *</label>
+                <input type="number" name="yas" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Doğum Tarihi *</label>
+                <input type="date" name="dogumTarihi" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">E-Posta Adresi *</label>
+                <input type="email" name="eposta" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Boy (cm) *</label>
+                <input type="number" name="boy" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Kilo (kg) *</label>
+                <input type="number" name="kilo" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Cep Telefonu *</label>
+                <input type="tel" name="cepTelefonu" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Meslek *</label>
+                <input type="text" name="meslek" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- ========================================================================= -->
-      <!-- STEP 2: ŞİKAYETLER, İLAÇLAR & BOŞALTIM (Sayfa 3-5) -->
-      <!-- ========================================================================= -->
-      <section id="step2" class="step-content bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-notes-medical"></i>
-            <span>2. Şikayetler, İlaçlar, Takviyeler & Boşaltım</span>
+        <!-- İletişim & Lokasyon -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-4">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>İletişim & Adres Bilgileri</span>
           </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 3 - 5: Mevcut sağlık problemleri, düzenli tedaviler ve Bristol dışkı skalası</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Şehir *</label>
+              <input type="text" name="sehir" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">İlçe *</label>
+              <input type="text" name="ilce" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Ev / İkamet Adresi *</label>
+              <textarea name="adres" rows="2" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">İş Telefonu *</label>
+              <input type="tel" name="isTelefonu" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">İş Adresi *</label>
+              <input type="text" name="isAdresi" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Size Ulaşamadığımızda Ulaşabileceğimiz Kişi ve Telefonu *</label>
+              <input type="text" name="acilKisi" oninput="updateField(this)" placeholder="Ad-Soyad, Yakınlık Derecesi ve Tel No" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+            </div>
+          </div>
         </div>
 
-        <div class="p-6 space-y-8">
-          
-          <!-- Devam Eden Sağlık Sorunları -->
-          <div class="border-b pb-6">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-bold text-gray-800 text-base">Önce Özet: Devam Eden Sağlık Sorunları</h3>
-                <p class="text-xs text-gray-500">Önem sırasına göre belirtiniz.</p>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MODÜL 2: ŞİKAYETLER, İLAÇLAR & DIŞKILAMA  -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6 hidden" data-step="1">
+        
+        <!-- Önce Özet -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-file-medical text-2xl"></i>
+              <h2 class="text-lg font-bold">2. Şikayetler & Sağlık Geçmişi</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">Devam eden sağlık sorunları, ilaçlar ve dışkılama düzeni</p>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <div>
+              <h3 class="text-[#587c29] font-bold text-sm flex items-center space-x-2 border-b pb-2 mb-2">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Önce Özet </span>
+              </h3>
+              <p class="text-xs text-slate-500">
+                Bugün devam etmekte olan sağlık sorunlarınızı sizce önem sırasına göre ve şimdilik sadece liste halinde yukarıdan aşağıda sıralayınız.
+              </p>
+            </div>
+
+            <!-- Dinamik Sorun Listesi -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Devam Eden Sağlık Sorunları</span>
+                <button type="button" onclick="addDynamicRow('sorunlarTable', ['sorun', 'siddet', 'tedavi'])" class="text-xs bg-[#587c29]/10 text-[#587c29] border border-[#587c29]/30 px-2.5 py-1 rounded-md font-semibold hover:bg-[#587c29]/20">
+                  + Yeni Ekle
+                </button>
               </div>
-              <button type="button" onclick="addDynamicRow('saglikSorunlariBody', 'saglikSorun')" class="text-xs bg-klinik-500 hover:bg-klinik-600 text-white px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-plus"></i> Yeni Ekle
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border border-slate-200 rounded-lg" id="sorunlarTable">
+                  <thead class="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th class="p-2 border-b">Sorun / Yakınma / Tanı</th>
+                      <th class="p-2 border-b w-32">Şiddet</th>
+                      <th class="p-2 border-b">Yapılan Tedavi</th>
+                      <th class="p-2 border-b w-10 text-center">Sil</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Dinamik İlaç Listesi -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Kullanmakta Olduğunuz İlaçlar</span>
+                <button type="button" onclick="addDynamicRow('ilaclarTable', ['ilac', 'doz', 'tarih', 'neden'])" class="text-xs bg-[#587c29]/10 text-[#587c29] border border-[#587c29]/30 px-2.5 py-1 rounded-md font-semibold hover:bg-[#587c29]/20">
+                  + Yeni Ekle
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border border-slate-200 rounded-lg" id="ilaclarTable">
+                  <thead class="bg-slate-50 text-slate-600">
+                    <tr>
+                      <th class="p-2 border-b">İlaç</th>
+                      <th class="p-2 border-b w-28">Doz</th>
+                      <th class="p-2 border-b w-32">Başlangıç Tarihi</th>
+                      <th class="p-2 border-b">Kullanma Nedeni</th>
+                      <th class="p-2 border-b w-10 text-center">Sil</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Yukarıda listelemiş olduğunuz ilaç tedavisinde yapılmış değişiklikleri ve nedenlerini aşağıya ayrıntılı biçimde yazınız.
+              </label>
+              <textarea name="ilacDegisiklikleri" rows="3" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Takviyeler & İlaç Geçmişi -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-capsules"></i>
+            <span>Besin Destekleri & Alışkanlıklar </span>
+          </h2>
+
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Besin Destekleri / Bitkisel İlaçlar / Vitaminler</span>
+              <button type="button" onclick="addDynamicRow('takviyelerTable', ['isim', 'doz', 'tarih', 'neden'])" class="text-xs bg-[#587c29]/10 text-[#587c29] border border-[#587c29]/30 px-2.5 py-1 rounded-md font-semibold hover:bg-[#587c29]/20">
+                + Yeni Ekle
               </button>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 text-gray-700 text-xs">
-                    <th class="p-2.5 border">Sorun / Yakınma / Tanı</th>
-                    <th class="p-2.5 border w-36">Şiddet</th>
-                    <th class="p-2.5 border">Yapılan Tedavi</th>
-                    <th class="p-2.5 border w-12 text-center">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody id="saglikSorunlariBody">
-                  <!-- JS satırları -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Kullanmakta Olduğunuz İlaçlar -->
-          <div class="border-b pb-6">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-bold text-gray-800 text-base">Kullanmakta Olduğunuz İlaçlar</h3>
-                <p class="text-xs text-gray-500">Düzenli reçeteli ilaçlarınız</p>
-              </div>
-              <button type="button" onclick="addDynamicRow('ilaclarBody', 'ilac')" class="text-xs bg-klinik-500 hover:bg-klinik-600 text-white px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-plus"></i> Yeni Ekle
-              </button>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 text-gray-700 text-xs">
-                    <th class="p-2.5 border">İlaç</th>
-                    <th class="p-2.5 border w-28">Doz</th>
-                    <th class="p-2.5 border w-32">Başlangıç Tarihi</th>
-                    <th class="p-2.5 border">Kullanma Nedeni</th>
-                    <th class="p-2.5 border w-12 text-center">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody id="ilaclarBody">
-                  <!-- JS satırları -->
-                </tbody>
-              </table>
-            </div>
-            <div class="mt-3">
-              <label class="block text-xs font-semibold text-gray-700 mb-1">İlaç tedavisinde yapılmış değişiklikler ve nedenleri:</label>
-              <textarea name="ilacDegisiklikleri" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm" placeholder="Daha önce doz artışı, ilaç değişimi veya kesilme öyküsü..."></textarea>
-            </div>
-          </div>
-
-          <!-- Besin Destekleri / Vitaminler -->
-          <div class="border-b pb-6">
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="font-bold text-gray-800 text-base">Kullanmakta Olduğunuz Besin Destekleri / Bitkisel İlaçlar / Vitaminler</h3>
-              </div>
-              <button type="button" onclick="addDynamicRow('takviyelerBody', 'takviye')" class="text-xs bg-klinik-500 hover:bg-klinik-600 text-white px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-plus"></i> Yeni Ekle
-              </button>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 text-gray-700 text-xs">
-                    <th class="p-2.5 border">İsim / Marka</th>
-                    <th class="p-2.5 border w-28">Doz</th>
-                    <th class="p-2.5 border w-32">Başlangıç Tarihi</th>
-                    <th class="p-2.5 border">Kullanma Nedeni</th>
-                    <th class="p-2.5 border w-12 text-center">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody id="takviyelerBody">
-                  <!-- JS satırları -->
-                </tbody>
-              </table>
-            </div>
-            
-            <div class="mt-4 space-y-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">İlaçlar ya da desteklerin hiç yan etkisi oldu mu? Açıklayınız *</label>
-                <textarea name="destekYanEtki" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              
-              <div>
-                <label class="block text-xs font-bold text-gray-700 mb-2">Aşağıdakilerden hangilerini uzun süreli kullandınız?</label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-gray-50 p-3 rounded-lg border">
-                  <label class="flex items-center gap-2 text-xs font-medium cursor-pointer">
-                    <input type="checkbox" name="uzunSureli_agriKesici" class="rounded text-klinik-500 w-4 h-4">
-                    <span>Ağrı kesici / Antiromatizmal (Majezik, Voltaren vb.)</span>
-                  </label>
-                  <label class="flex items-center gap-2 text-xs font-medium cursor-pointer">
-                    <input type="checkbox" name="uzunSureli_parasetamol" class="rounded text-klinik-500 w-4 h-4">
-                    <span>Parasetamol (Vermidon, Parol vb.)</span>
-                  </label>
-                  <label class="flex items-center gap-2 text-xs font-medium cursor-pointer">
-                    <input type="checkbox" name="uzunSureli_mideKoruyucu" class="rounded text-klinik-500 w-4 h-4">
-                    <span>Mide koruyucu ilaçlar (Lansor, Nexium vb.)</span>
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Bebeklikten bu yana antibiyotik kullanım sıklığınız ve nedenleri hakkında bilgi veriniz *</label>
-                <textarea name="antibiyotikKullanimi" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dışkılama Alışkanlıkları & Bristol Skalası -->
-          <div>
-            <h3 class="font-bold text-gray-800 text-base mb-2">Dışkılama Alışkanlıklarınız & Bristol Skalası</h3>
-            <p class="text-xs text-gray-600 mb-3">En sık karşılaştığınız dışkı formunu aşağıdaki skala kartlarından seçip detayını belirtiniz:</p>
-            
-            <!-- Bristol Kartları Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4 text-center">
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-amber-50/40">
-                <input type="radio" name="bristolTip" value="Tip 1" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-amber-950">Tip 1</span>
-                <span class="text-[10px] text-gray-600">Ayrı sert keçi pisliği gibi topaklar</span>
-              </label>
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-amber-50/40">
-                <input type="radio" name="bristolTip" value="Tip 2" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-amber-950">Tip 2</span>
-                <span class="text-[10px] text-gray-600">Sosis biçimli fakat topaklı</span>
-              </label>
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-amber-50/40">
-                <input type="radio" name="bristolTip" value="Tip 3" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-amber-950">Tip 3</span>
-                <span class="text-[10px] text-gray-600">Sosis gibi, yüzeyinde çatlaklar var</span>
-              </label>
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-emerald-50 border-emerald-300">
-                <input type="radio" name="bristolTip" value="Tip 4" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-emerald-900">Tip 4 (İdeal)</span>
-                <span class="text-[10px] text-gray-600">Sosis veya yılan gibi, düzgün ve yumuşak</span>
-              </label>
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-amber-50/40">
-                <input type="radio" name="bristolTip" value="Tip 5" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-amber-950">Tip 5</span>
-                <span class="text-[10px] text-gray-600">Yumuşak kenarları belirgin parçalar</span>
-              </label>
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-amber-50/40">
-                <input type="radio" name="bristolTip" value="Tip 6" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-amber-950">Tip 6</span>
-                <span class="text-[10px] text-gray-600">Püre kıvamında, yırtık kenarlı</span>
-              </label>
-              <label class="border rounded-lg p-2.5 cursor-pointer hover:border-klinik-500 transition flex flex-col items-center bg-amber-50/40">
-                <input type="radio" name="bristolTip" value="Tip 7" class="mb-1 text-klinik-500">
-                <span class="font-bold text-xs text-amber-950">Tip 7</span>
-                <span class="text-[10px] text-gray-600">Tamamen sıvı, katı parça yok</span>
-              </label>
-            </div>
-
-            <div class="space-y-3">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">
-                  Haftanın kaç günü kaç kez ve hangi tip dışkılama yaptığınızı belirtiniz. Son yıllarda değişiklik olduysa yazınız: *
-                </label>
-                <textarea name="diskilamaAciklama" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">
-                  Yemek sonrası karında gaz/şişkinlik olur mu? (Kaç öğünde olur, ne kadar sürer, yemekten ne kadar sonra, üst mü alt karında mı belirgindir?) *
-                </label>
-                <textarea name="gazSiskinlikAciklama" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- STEP 3: STRES, UYKU & EGZERSİZ (Sayfa 6-9) -->
-      <!-- ========================================================================= -->
-      <section id="step3" class="step-content bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-moon"></i>
-            <span>3. Stres, Uyku Düzeni & Egzersiz</span>
-          </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 6 - 9: Stres kaynakları, uyku kalitesi ve hareket alışkanlıkları</p>
-        </div>
-
-        <div class="p-6 space-y-8">
-          
-          <!-- Stres ve Sosyal Durum -->
-          <div class="border-b pb-6 space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">Stres ve Sosyal Durum</h3>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Yaşamınızda aşırı bir stres var mı? Açıklayınız *</label>
-              <textarea name="asiriStresAciklama" rows="2" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm"></textarea>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-700 mb-2">Yaşamınızdaki stres kaynaklarını ağırlığına göre puanlayınız (1 En Az, 10 En Çok): *</label>
-              <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                <div class="bg-gray-50 p-2.5 rounded-lg border">
-                  <span class="text-xs font-semibold block mb-1">İş:</span>
-                  <input type="number" min="1" max="10" name="stresPuan_is" class="w-full border p-1.5 rounded text-sm text-center" placeholder="1-10">
-                </div>
-                <div class="bg-gray-50 p-2.5 rounded-lg border">
-                  <span class="text-xs font-semibold block mb-1">Aile:</span>
-                  <input type="number" min="1" max="10" name="stresPuan_aile" class="w-full border p-1.5 rounded text-sm text-center" placeholder="1-10">
-                </div>
-                <div class="bg-gray-50 p-2.5 rounded-lg border">
-                  <span class="text-xs font-semibold block mb-1">Sosyal:</span>
-                  <input type="number" min="1" max="10" name="stresPuan_sosyal" class="w-full border p-1.5 rounded text-sm text-center" placeholder="1-10">
-                </div>
-                <div class="bg-gray-50 p-2.5 rounded-lg border">
-                  <span class="text-xs font-semibold block mb-1">Mali Sorunlar:</span>
-                  <input type="number" min="1" max="10" name="stresPuan_mali" class="w-full border p-1.5 rounded text-sm text-center" placeholder="1-10">
-                </div>
-                <div class="bg-gray-50 p-2.5 rounded-lg border">
-                  <span class="text-xs font-semibold block mb-1">Sağlık:</span>
-                  <input type="number" min="1" max="10" name="stresPuan_saglik" class="w-full border p-1.5 rounded text-sm text-center" placeholder="1-10">
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Boş vakitlerinizde ne ile uğraşırsınız? (Hobi, spor vb.) *</label>
-                <input type="text" name="hobiler" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Geçmişte hiç kortizonlu ilaçlar kullandınız mı? Ne zaman? Ne kadar süre ile? *</label>
-                <input type="text" name="kortizonGecmisi" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-          </div>
-
-          <!-- Uyku / Uyku Düzeni -->
-          <div class="border-b pb-6 space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">Uyku & Sirkadiyen Ritim</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Gecede ortalama kaç saat uyursunuz? *</label>
-                <input type="text" name="uykuSuresi" class="w-full border rounded-lg p-2 text-sm" placeholder="Örn: 7 saat">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Saat kaçta uyumuş olursunuz? *</label>
-                <input type="text" name="yatisSaati" class="w-full border rounded-lg p-2 text-sm" placeholder="Örn: 23:30">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Saat kaçta uyanırsınız? *</label>
-                <input type="text" name="uyanmaSaati" class="w-full border rounded-lg p-2 text-sm" placeholder="Örn: 07:00">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-2">Uykuya dalmada güçlük çeker misiniz? *</span>
-                <div class="flex gap-4">
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="uykuGucluk" value="Evet"> Evet</label>
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="uykuGucluk" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-2">Uyku ilacı kullanıyor musunuz? *</span>
-                <div class="flex gap-4">
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="uykuIlaciVarMi" value="Evet"> Evet</label>
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="uykuIlaciVarMi" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Yattıktan sonra uyumanız 20 dakikayı geçiyorsa bu sürede ne yapıyorsunuz? *</label>
-                <input type="text" name="uykuGecikmeAktivite" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Kitap okuma, TV, cep telefonu...">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Evet ise hangi uyku ilacını kullanıyorsunuz?</label>
-                <input type="text" name="uykuIlaciAdi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-1">Gün içerisinde uyuklar mısınız? *</span>
-                <div class="flex gap-3 mb-2">
-                  <label class="text-xs"><input type="radio" name="gunduzUyuklama" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="gunduzUyuklama" value="Hayır"> Hayır</label>
-                </div>
-                <input type="text" name="gunduzUyuklamaDetay" class="w-full border rounded p-1 text-xs" placeholder="Ne zaman ve ne kadar süre?">
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-1">Bunu takiben dinlenmiş kalkar mısınız? *</span>
-                <div class="flex gap-3 mt-2">
-                  <label class="text-xs"><input type="radio" name="dinlenmisKalkma" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="dinlenmisKalkma" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-1">Gece yarısı / sabaha karşı nedensiz uyanır mısınız? *</span>
-                <div class="flex gap-3 mt-2">
-                  <label class="text-xs"><input type="radio" name="nedensizUyanma" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="nedensizUyanma" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Uyku ortasında uyanma sıklığı, haftada kaç kez ve tekrar uyuma süresi? *</label>
-                <input type="text" name="geceUyanmaDetay" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-1">Gece bacak oynatma ihtiyacı / Huzursuz bacak sendromu var mı? *</span>
-                <div class="flex gap-4 mt-2">
-                  <label class="text-xs"><input type="radio" name="huzursuzBacakVarMi" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="huzursuzBacakVarMi" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Egzersiz ve Hareket -->
-          <div>
-            <h3 class="font-bold text-gray-800 text-base mb-3">Egzersiz ve Hareket</h3>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Rutin günlük egzersiz ve hareket durumunuzu yazınız *</label>
-                <input type="text" name="rutinEgzersiz" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                  <span class="text-xs font-semibold text-gray-700 block mb-1">Egzersiz için istekli misiniz? *</span>
-                  <div class="flex gap-3 mt-2">
-                    <label class="text-xs"><input type="radio" name="egzersizIstek" value="Evet"> Evet</label>
-                    <label class="text-xs"><input type="radio" name="egzersizIstek" value="Hayır"> Hayır</label>
-                  </div>
-                </div>
-
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                  <span class="text-xs font-semibold text-gray-700 block mb-1">Egzersiz yapmak için bir engeliniz var mı? *</span>
-                  <div class="flex gap-3 mt-2">
-                    <label class="text-xs"><input type="radio" name="egzersizEngel" value="Evet"> Evet</label>
-                    <label class="text-xs"><input type="radio" name="egzersizEngel" value="Hayır"> Hayır</label>
-                  </div>
-                </div>
-
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                  <span class="text-xs font-semibold text-gray-700 block mb-1">Egzersiz sonrası fazlasıyla yorgun/bitkin olur musunuz? *</span>
-                  <div class="flex gap-3 mt-2">
-                    <label class="text-xs"><input type="radio" name="egzersizYorgunluk" value="Evet"> Evet</label>
-                    <label class="text-xs"><input type="radio" name="egzersizYorgunluk" value="Hayır"> Hayır</label>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Egzersiz yapmanızı engelleyen bir şey var mı? Varsa açıklayınız. *</label>
-                <input type="text" name="egzersizEngelAciklama" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- STEP 4: BESLENME & ALIŞKANLIKLAR (Sayfa 10-15) -->
-      <!-- ========================================================================= -->
-      <section id="step4" class="step-content bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-utensils"></i>
-            <span>4. Beslenme Alışkanlıkları & Yaşam Tarzı</span>
-          </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 10 - 15: Gıda duyarlılıkları, tüketim detayları, günlük menü ve sigara/alkol</p>
-        </div>
-
-        <div class="p-6 space-y-8">
-          
-          <!-- Beslenme Temel Sorular -->
-          <div class="border-b pb-6 space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">Genel Beslenme Düzeni</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Hangi yiyeceklere karşı duyarlılığınız var? Duyarlılıktan kastınız nedir? Açıklayın *</label>
-                <textarea name="gidaDuyarliligi" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Günde kaç öğün yersiniz? Hangi öğünler? Açıklayın *</label>
-                <textarea name="ogunSayisi" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Öğün atlamak sizi çok etkiler mi? Açıklayın *</label>
-                <textarea name="ogunAtlamaEtkisi" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-2">Haftada kaç öğün dışarıda yersiniz? *</label>
-                <div class="flex gap-4 items-center bg-gray-50 p-3 rounded-lg border">
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="disaridaYeme" value="0-1"> 0-1</label>
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="disaridaYeme" value="1-3"> 1-3</label>
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="disaridaYeme" value="3-5"> 3-5</label>
-                  <label class="flex items-center gap-1.5 text-xs"><input type="radio" name="disaridaYeme" value="5+"> 5+</label>
-                </div>
-              </div>
-            </div>
-
-            <!-- Yeme Davranışları Onay Kutuları -->
-            <div>
-              <label class="block text-xs font-bold text-gray-700 mb-2">Size uyanları işaretleyin (Yeme Alışkanlıkları):</label>
-              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 bg-gray-50 p-3 rounded-lg border">
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_hizli"> Hızlı Yerim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_geceGec"> Gece Geç Yerim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_zamanSorunu"> Yemek için zaman sorunum var</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_disardaCok"> Öğünlerin yarıdan fazlasını dışarda yerim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_stresAz"> Stres altında az yemek yerim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_evHalki"> Ev halkı sağlıklı yiyecekleri sevmez</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_cokYerim"> Çok Yerim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_saglikliSevmem"> Sağlıklı denen yiyecekleri sevmem</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_sikSeyahat"> Sık seyahat ederim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_stresCok"> Stres altında çok yemek yerim</label>
-                <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="yemeTavr_evdePismez"> Evde pek yemek pişmez</label>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Sizce sağlıksız olan hangi yiyecekleri sık yersiniz? *</label>
-                <input type="text" name="sagliksizGidalar" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Sizce sağlıklı olan hangi yiyecekleri sık yersiniz? *</label>
-                <input type="text" name="saglikliGidalar" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-          </div>
-
-          <!-- 3 Günlük Tüketim Detayları -->
-          <div class="border-b pb-6 space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">3 Günlük Süre İçerisindeki Tüketim Alışkanlıklarınız</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Kaç porsiyon sebze yersiniz? Bunlar genelde hangileridir? *</label>
-                <input type="text" name="sebzeTuketimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Kaç öğünde süt ve süt ürünlerini tüketirsiniz? Nereden alırsınız? *</label>
-                <input type="text" name="sutUrunleri" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Süt içer misiniz? Ne kadar? *</label>
-                <input type="text" name="sutIcme" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Ekmek tüketiminiz nasıldır? *</label>
-                <input type="text" name="ekmekTuketimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Salam, sucuk, sosis, hazır köfte tüketiminiz nasıldır? *</label>
-                <input type="text" name="sarkuteriTuketimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Tatlı, bisküvi, kek vb. tüketiminiz nasıldır? *</label>
-                <input type="text" name="tatliTuketimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Hamurişi, pastane ürünleri tüketiminiz nasıldır? *</label>
-                <input type="text" name="hamurisiTuketimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Pişmemiş ot/sebze tüketiminiz nasıldır? *</label>
-                <input type="text" name="cigSebze" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Tuz kullanımınız nasıldır? *</label>
-                <input type="text" name="tuzKullanimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">İçme suyu olarak ne kullanıyorsunuz? *</label>
-                <input type="text" name="icmeSuyu" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Arıtma, cam damacana, plastik...">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Soğuk içecekler (kola, fanta, hazır limonata) tüketiminiz nasıldır? *</label>
-                <input type="text" name="sogukIcecek" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Yemeklerde yağ olarak neler kullanırsınız? *</label>
-                <input type="text" name="yagCesitleri" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Zeytinyağı, tereyağı, ayçiçek...">
-              </div>
-              <div class="md:col-span-2">
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Kahve/Nescafe içer misiniz? Ne sıklıkla? İçmediğinizde arar mısınız? Açıklayınız *</label>
-                <input type="text" name="kahveTuketimi" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-          </div>
-
-          <!-- Normal Bir Günde Neler Yersiniz? (Sayfa 14) -->
-          <div class="border-b pb-6 space-y-3">
-            <h3 class="font-bold text-gray-800 text-base">Normal Bir Günde Neler Yersiniz? (Çok Ayrıntılı Olarak Yazınız)</h3>
-            <div class="space-y-3">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Kahvaltı *</label>
-                <textarea name="gunlukMenu_kahvalti" rows="2" class="w-full border rounded-lg p-2 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Öğle *</label>
-                <textarea name="gunlukMenu_ogle" rows="2" class="w-full border rounded-lg p-2 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Akşam *</label>
-                <textarea name="gunlukMenu_aksam" rows="2" class="w-full border rounded-lg p-2 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Atıştırmalar *</label>
-                <textarea name="gunlukMenu_atistirma" rows="2" class="w-full border rounded-lg p-2 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">İçecekler *</label>
-                <textarea name="gunlukMenu_icecekler" rows="2" class="w-full border rounded-lg p-2 text-sm"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sigara / Alkol (Sayfa 15) -->
-          <div class="space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">Sigara & Alkol Kullanımı</h3>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Sigara kullanır mısınız? Ne kadar? Bırakmaya çalıştınız mı? Geçmişte kullandınız mı? Açıklayınız *</label>
-              <textarea name="sigaraAciklama" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Sigara dumanına maruz kalıyor musunuz? Geçmişte kaldınız mı? Açıklayınız *</label>
-              <textarea name="pasifIciciAciklama" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 mb-1">Alkol alır mısınız? Tür ve miktarını açıklayınız. Geçmiş kullanımınız varsa belirtiniz. *</label>
-              <textarea name="alkolAciklama" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- STEP 5: SOSYAL YAŞAM & YAŞAM MEMNUNİYETİ (Sayfa 16-19) -->
-      <!-- ========================================================================= -->
-      <section id="step5" class="step-content bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-users"></i>
-            <span>5. Sosyal Yaşam & Yaşam Memnuniyet Skalası</span>
-          </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 16 - 19: İlişkiler, manevi destek ve 1-10 yaşam dengesi ölçekleri</p>
-        </div>
-
-        <div class="p-6 space-y-8">
-          
-          <!-- İlişki ve İş Durumu -->
-          <div class="border-b pb-6 space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">İlişki ve İş Bilgileri</h3>
-            
-            <div>
-              <label class="block text-xs font-bold text-gray-700 mb-2">İlişki Durumunuz *</label>
-              <div class="flex flex-wrap gap-4 bg-gray-50 p-3 rounded-lg border">
-                <label class="text-xs font-medium"><input type="radio" name="iliskiDurumu" value="Bekar"> Bekar</label>
-                <label class="text-xs font-medium"><input type="radio" name="iliskiDurumu" value="Evli"> Evli</label>
-                <label class="text-xs font-medium"><input type="radio" name="iliskiDurumu" value="Nişanlı"> Nişanlı</label>
-                <label class="text-xs font-medium"><input type="radio" name="iliskiDurumu" value="Boşanmış"> Boşanmış</label>
-                <label class="text-xs font-medium"><input type="radio" name="iliskiDurumu" value="Uzun Süreli İlişki"> Uzun Süreli İlişki</label>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Kimlerle aynı evde yaşıyorsunuz? (Eş, çocuk, evcil hayvan vb.) *</label>
-                <input type="text" name="evHalki" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Bugünkü işiniz *</label>
-                <input type="text" name="bugunkuIs" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Önceki işiniz *</label>
-                <input type="text" name="oncekiIs" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-gray-700 mb-2">Duygusal destek alabildiğiniz kimler vardır? (Size uyan tümünü işaretleyin)</label>
-              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 bg-gray-50 p-3 rounded-lg border">
-                <label class="text-xs"><input type="checkbox" name="duygusalDestek_es"> Eş</label>
-                <label class="text-xs"><input type="checkbox" name="duygusalDestek_aile"> Aile</label>
-                <label class="text-xs"><input type="checkbox" name="duygusalDestek_arkadaslar"> Arkadaşlar</label>
-                <label class="text-xs"><input type="checkbox" name="duygusalDestek_dini"> Dini/Ruhani</label>
-                <label class="text-xs"><input type="checkbox" name="duygusalDestek_evcil"> Evcil Hayvan</label>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Diğer destek alabildiğiniz kimler vardır?</label>
-                <input type="text" name="digerDestekler" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Dini ya da ruhani yönünüz güçlü müdür? *</label>
-                <div class="flex gap-4 items-center h-10">
-                  <label class="text-xs"><input type="radio" name="ruhaniYon" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="ruhaniYon" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-              <div class="md:col-span-2">
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Evet ise, açıklayınız:</label>
-                <input type="text" name="ruhaniAciklama" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-          </div>
-
-          <!-- Yaşam Memnuniyet Skalası (Sayfa 18 & 19) -->
-          <div>
-            <div class="mb-3">
-              <h3 class="font-bold text-gray-800 text-base">Yaşam Memnuniyeti Puanlama Cetveli</h3>
-              <p class="text-xs text-gray-600">Aşağıdaki alanlarda sizce işler nasıl gidiyor? Puanlayın. Size uymayanlar için (-) işaretleyin. (1 En Kötü, 10 Çok İyi)</p>
-            </div>
-
-            <div class="space-y-4">
-              <!-- Helper function JS will build radio groups or we define them cleanly -->
-              <div id="skalaContainer" class="space-y-3">
-                <!-- Dinamik olarak 10 alan basılır: Genel, Okul, İş, Sosyal, Yakın Arkadaşlar, Cinsellik, Kız/Erkek Arkadaş, Çocuklar, Ebeveyn, Eş -->
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- STEP 6: TIBBİ TANILAR, AİLE HİKAYESİ & ÜROGENİTAL (Sayfa 20-25) -->
-      <!-- ========================================================================= -->
-      <section id="step6" class="step-content bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-file-waveform"></i>
-            <span>6. Tıbbi Tanılar, Aile Hikayesi & Ürogenital</span>
-          </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 20 - 25: Teşhis geçmişi matrisi, aile öyküsü ve erkek sağlığı</p>
-        </div>
-
-        <div class="p-6 space-y-8">
-          
-          <!-- Hastalıklar Matrisi -->
-          <div class="border-b pb-6">
-            <div class="mb-3">
-              <h3 class="font-bold text-gray-800 text-base">Hastalıklarınız (Teşhis Matrisi)</h3>
-              <p class="text-xs text-gray-600">Daha önce konulmuş olan teşhisler halen devam etmekte ise <b>"Şu anda"</b>, geçmişte geçirdiyseniz <b>"Geçmişte"</b>, yoksa <b>"Yok"</b> işaretleyin.</p>
-            </div>
-
-            <div class="overflow-x-auto max-h-96 overflow-y-auto border rounded-lg">
-              <table class="w-full text-left text-xs border-collapse">
-                <thead class="bg-gray-100 sticky top-0 border-b">
+              <table class="w-full text-left text-xs border border-slate-200 rounded-lg" id="takviyelerTable">
+                <thead class="bg-slate-50 text-slate-600">
                   <tr>
-                    <th class="p-2.5 font-bold text-gray-700">Hastalık Adı</th>
-                    <th class="p-2.5 text-center w-24">Şu anda</th>
-                    <th class="p-2.5 text-center w-24">Geçmişte</th>
-                    <th class="p-2.5 text-center w-24">Yok</th>
+                    <th class="p-2 border-b">İsim / Marka</th>
+                    <th class="p-2 border-b w-28">Doz</th>
+                    <th class="p-2 border-b w-32">Başlangıç Tarihi</th>
+                    <th class="p-2 border-b">Kullanma Nedeni</th>
+                    <th class="p-2 border-b w-10 text-center">Sil</th>
                   </tr>
                 </thead>
-                <tbody id="hastaliklarTableBody" class="divide-y divide-gray-200">
-                  <!-- JS ile 38 hastalık satırı doldurulur -->
-                </tbody>
+                <tbody class="divide-y divide-slate-100"></tbody>
               </table>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">İşaretlemiş olduğunuz hastalıklar hakkında bilgi veriniz:</label>
-                <textarea name="hastaliklarBilgi" rows="2" class="w-full border rounded-lg p-2 text-xs"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Geçmişte Kolestrol - Trigliserit ölçümleriniz yüksek mi? Belirtiniz:</label>
-                <textarea name="kolesterolDetay" rows="2" class="w-full border rounded-lg p-2 text-xs"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Tansiyon ölçümleriniz yüksek mi? Takip değerlerinizi yazınız:</label>
-                <textarea name="tansiyonDetay" rows="2" class="w-full border rounded-lg p-2 text-xs"></textarea>
-              </div>
             </div>
           </div>
 
-          <!-- Aile Hikayesi (Sayfa 21) -->
-          <div class="border-b pb-6 space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="font-bold text-gray-800 text-base">Aile Hikayesi</h3>
-                <p class="text-xs text-gray-500">Birinci derece yakınlarınızın sağlık durumu</p>
-              </div>
-              <button type="button" onclick="addDynamicRow('aileBody', 'aile')" class="text-xs bg-klinik-500 hover:bg-klinik-600 text-white px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-plus"></i> Birey Ekle
-              </button>
-            </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">İlaçlar ya da desteklerin hiç yan etkisi oldu mu? Açıklayınız *</label>
+            <textarea name="yanEtkiAciklama" rows="2" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+          </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 text-gray-700 text-xs">
-                    <th class="p-2 border">Birey</th>
-                    <th class="p-2 border w-32">Yaş</th>
-                    <th class="p-2 border w-48">(Yaşamıyorsa) Vefat Yaşı</th>
-                    <th class="p-2 border w-12 text-center">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody id="aileBody">
-                  <!-- JS satırları -->
-                </tbody>
-              </table>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Aile bireylerinizdeki önemli rahatsızlıkları yazınız (Anne, Baba, Kardeş) *</label>
-                <textarea name="aileHastaliklari" rows="2" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Diyabet, kanser, kalp krizi, otoimmün..."></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Aile bireyleri kısmında vermek istediğiniz diğer bilgiler:</label>
-                <textarea name="aileDigerBilgiler" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-2">Aşağıdakilerden hangilerini uzun süreli kullandınız?</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <label class="flex items-center space-x-2 text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="uzunSureli_agriKesici" onchange="updateCheckbox(this)" class="rounded text-[#587c29] focus:ring-[#587c29]">
+                <span>Ağrı kesici / Antiromatizmal (Majezik, Voltaren vb.)</span>
+              </label>
+              <label class="flex items-center space-x-2 text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="uzunSureli_parasetamol" onchange="updateCheckbox(this)" class="rounded text-[#587c29] focus:ring-[#587c29]">
+                <span>Parasetamol (Vermidon, Parol vb.)</span>
+              </label>
+              <label class="flex items-center space-x-2 text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-200 cursor-pointer">
+                <input type="checkbox" name="uzunSureli_mideKoruyucu" onchange="updateCheckbox(this)" class="rounded text-[#587c29] focus:ring-[#587c29]">
+                <span>Mide koruyucu ilaçlar (Lansor, Nexium vb.)</span>
+              </label>
             </div>
           </div>
 
-          <!-- Ürogenital & Baş Ağrısı / Kanser (Sayfa 23-25) -->
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="font-bold text-gray-800 text-base">Ürogenital Yakınmalar & Erkek Sağlığı</h3>
-              </div>
-              <button type="button" onclick="addDynamicRow('urogenitalBody', 'urogenital')" class="text-xs bg-klinik-500 hover:bg-klinik-600 text-white px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-plus"></i> Yakınma Ekle
-              </button>
-            </div>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
-                <thead>
-                  <tr class="bg-gray-100 text-gray-700 text-xs">
-                    <th class="p-2 border">Yakınma</th>
-                    <th class="p-2 border w-40">Şiddet</th>
-                    <th class="p-2 border w-12 text-center">İşlem</th>
-                  </tr>
-                </thead>
-                <tbody id="urogenitalBody">
-                  <!-- JS satırları -->
-                </tbody>
-              </table>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Gece idrara kaç kez kalkarsınız? *</label>
-                <input type="text" name="geceIdrar" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">PSA testi yaptırdınız mı? Sonucu yazınız: *</label>
-                <input type="text" name="psaTesti" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-            </div>
-
-            <div class="space-y-3 pt-2">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Migren / Kronik baş ağrısı sorununuz var mı? Tetikleyen durumları belirtiniz: *</label>
-                <textarea name="migrenTetikleyiciler" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Görmüş olduğunuz kanser tedavisi hakkında ayrıntılı bilgi veriniz:</label>
-                <textarea name="kanserTedaviDetay" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Diğer rahatsızlıklar ve ek bilgiler:</label>
-                <textarea name="digerRahatsizliklar" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-            </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Bebeklikten bu yana antibiyotik kullanım sıklığınız ve nedenleri hakkında bilgi veriniz *</label>
+            <textarea name="antibiyotikGecmisi" rows="2" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
           </div>
-
         </div>
-      </section>
 
-      <!-- ========================================================================= -->
-      <!-- STEP 7: SİSTEM YAKINMALARI, TOKSİNLER & DÜŞÜNCELER (Sayfa 26-36) -->
-      <!-- ========================================================================= -->
-      <section id="step7" class="step-content bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div class="bg-klinik-500 text-white px-6 py-4">
-          <h2 class="text-xl font-bold flex items-center gap-2">
-            <i class="fa-solid fa-stethoscope"></i>
-            <span>7. Sistem Yakınmaları, Toksinler & Düşünceler</span>
+        <!-- Dışkılama & Bristol Skalası (Görseldeki 7 Kart Tasarımı) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div class="space-y-3">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 tracking-tight">Dışkılama Alışkanlıklarınız & Bristol Skalası</h3>
+              <p class="text-xs text-slate-600 mt-0.5">En sık karşılaştığınız dışkı formunu aşağıdaki skala kartlarından seçip detayını belirtiniz:</p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 pt-1">
+              
+              <!-- Tip 1 -->
+              <label class="bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 1" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-amber-800 mb-1">Tip 1</span>
+                <span class="text-[11px] text-slate-600 leading-tight">Ayrı sert keçi pisliği gibi topaklar</span>
+              </label>
+
+              <!-- Tip 2 -->
+              <label class="bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 2" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-amber-800 mb-1">Tip 2</span>
+                <span class="text-[11px] text-slate-600 leading-tight">Sosis biçimli fakat topaklı</span>
+              </label>
+
+              <!-- Tip 3 -->
+              <label class="bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 3" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-amber-800 mb-1">Tip 3</span>
+                <span class="text-[11px] text-slate-600 leading-tight">Sosis gibi, yüzeyinde çatlaklar var</span>
+              </label>
+
+              <!-- Tip 4 (İdeal - Yeşil Vurgulu) -->
+              <label class="bristol-card cursor-pointer border-2 border-emerald-400 bg-emerald-50/40 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 4 (İdeal)" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-emerald-700 mb-1">Tip 4 (İdeal)</span>
+                <span class="text-[11px] text-slate-700 leading-tight font-medium">Sosis veya yılan gibi, düzgün ve yumuşak</span>
+              </label>
+
+              <!-- Tip 5 -->
+              <label class="bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 5" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-amber-800 mb-1">Tip 5</span>
+                <span class="text-[11px] text-slate-600 leading-tight">Yumuşak kenarları belirgin parçalar</span>
+              </label>
+
+              <!-- Tip 6 -->
+              <label class="bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 6" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-amber-800 mb-1">Tip 6</span>
+                <span class="text-[11px] text-slate-600 leading-tight">Püre kıvamında, yırtık kenarlı</span>
+              </label>
+
+              <!-- Tip 7 -->
+              <label class="bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs">
+                <input type="radio" name="bristolTipi" value="Tip 7" onchange="updateBristolCard(this)" class="w-4 h-4 text-[#587c29] focus:ring-[#587c29] mb-2">
+                <span class="text-xs font-bold text-amber-800 mb-1">Tip 7</span>
+                <span class="text-[11px] text-slate-600 leading-tight">Tamamen sıvı, katı parça yok</span>
+              </label>
+
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Bu tabloya bakarak, haftanın kaç günü kaç kez ve hangi tip dışkılama yaptığınızı belirtmeye çalışınız. Dışkılamanızda son yıllarda değişiklik olduysa belirtiniz. *
+            </label>
+            <textarea name="bristolAciklama" rows="3" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">
+              Yemek sonrası karında gaz/şişkinlik olur mu? (Çıkartabildiğiniz gazı sormuyoruz, yemekten bir süre sonra yarım saat veya daha fazla süren gerginlik. Günlük kaç öğünde, ne kadar sonra, üst/alt karında mı?)*
+            </label>
+            <textarea name="gazSiskinlikAciklama" rows="3" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MODÜL 3: STRES, UYKU & HAREKET  -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6 hidden" data-step="2">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-moon text-2xl"></i>
+              <h2 class="text-lg font-bold">3. Stres, Uyku ve Egzersiz</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">Stres yükü, uyku kalitesi ve hareket rutini</p>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Yaşamınızda aşırı bir stres var mı? Açıklayınız *</label>
+              <textarea name="stresAciklama" rows="2" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">Yaşamınızdaki stres kaynaklarınız ve ağırlığına göre 1-10 arasında puan veriniz (1 en az, 10 en çok) *</label>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <div>
+                  <span class="text-xs text-slate-600 block mb-1">İş:</span>
+                  <input type="number" min="1" max="10" name="stresPuan_is" oninput="updateField(this)" class="w-full border p-2 text-sm rounded-lg text-center font-bold">
+                </div>
+                <div>
+                  <span class="text-xs text-slate-600 block mb-1">Aile:</span>
+                  <input type="number" min="1" max="10" name="stresPuan_aile" oninput="updateField(this)" class="w-full border p-2 text-sm rounded-lg text-center font-bold">
+                </div>
+                <div>
+                  <span class="text-xs text-slate-600 block mb-1">Sosyal:</span>
+                  <input type="number" min="1" max="10" name="stresPuan_sosyal" oninput="updateField(this)" class="w-full border p-2 text-sm rounded-lg text-center font-bold">
+                </div>
+                <div>
+                  <span class="text-xs text-slate-600 block mb-1">Mali Sorunlar:</span>
+                  <input type="number" min="1" max="10" name="stresPuan_mali" oninput="updateField(this)" class="w-full border p-2 text-sm rounded-lg text-center font-bold">
+                </div>
+                <div>
+                  <span class="text-xs text-slate-600 block mb-1">Sağlık:</span>
+                  <input type="number" min="1" max="10" name="stresPuan_saglik" oninput="updateField(this)" class="w-full border p-2 text-sm rounded-lg text-center font-bold">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Boş vakitlerinizde ne ile uğraşırsınız? (Hobi, spor vb.) *</label>
+              <input type="text" name="bosVakitler" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Geçmişte hiç kortizonlu ilaçlar kullandınız mı? Ne zaman? Ne kadar süre ile? *</label>
+              <textarea name="kortizonGecmisi" rows="2" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-[#587c29]"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!--  Uyku / Uyku Düzeni -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-bed"></i>
+            <span>Uyku Düzeni </span>
           </h2>
-          <p class="text-xs text-klinik-100 mt-1">Sayfa 26 - 36: Son 6 aydaki belirtiler, çevre toksinleri ve tedavi hedefleri</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Gecede ortalama uyku süresi *</label>
+              <input type="text" name="uykuSuresi" placeholder="Örn: 7 saat" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Saat kaçta uyursunuz? *</label>
+              <input type="text" name="uykuSaati" placeholder="Örn: 23:30" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Saat kaçta uyanırsınız? *</label>
+              <input type="text" name="uyanmaSaati" placeholder="Örn: 07:00" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <label class="block text-xs font-bold text-slate-700 mb-2">Uykuya dalmada güçlük çeker misiniz? *</label>
+              <div class="flex space-x-4 text-xs font-medium">
+                <label class="flex items-center space-x-1"><input type="radio" name="uykuDalmaGucluk" value="Evet" onchange="updateRadio(this)"> <span>Evet</span></label>
+                <label class="flex items-center space-x-1"><input type="radio" name="uykuDalmaGucluk" value="Hayır" onchange="updateRadio(this)"> <span>Hayır</span></label>
+              </div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <label class="block text-xs font-bold text-slate-700 mb-2">Uyku ilacı kullanıyor musunuz? *</label>
+              <div class="flex space-x-4 text-xs font-medium">
+                <label class="flex items-center space-x-1"><input type="radio" name="uykuIlaci" value="Evet" onchange="updateRadio(this)"> <span>Evet</span></label>
+                <label class="flex items-center space-x-1"><input type="radio" name="uykuIlaci" value="Hayır" onchange="updateRadio(this)"> <span>Hayır</span></label>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Yattıktan sonra uyumanız 20 dakikayı geçiyorsa bu sürede ne yapıyorsunuz? (Kitap, TV, telefon vb.) *</label>
+            <input type="text" name="uyku20DkGecince" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Evet ise hangi uyku ilacını kullanıyorsunuz?</label>
+              <input type="text" name="uykuIlaciAdi" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Gün içerisinde uyuklar mısınız? (Ne zaman / ne kadar?)</label>
+              <input type="text" name="gunIciUyuklama" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2 text-slate-700">Uyuklamayı takiben dinlenmiş kalkar mısınız?</span>
+              <div class="flex space-x-3"><label><input type="radio" name="uykuDinlenmis" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="uykuDinlenmis" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2 text-slate-700">Gece/sabah nedensiz uyanır mısınız?</span>
+              <div class="flex space-x-3"><label><input type="radio" name="geceNedensizUyanma" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="geceNedensizUyanma" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2 text-slate-700">Huzursuz bacak sendromu / oynatma ihtiyacı?</span>
+              <div class="flex space-x-3"><label><input type="radio" name="huzursuzBacak" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="huzursuzBacak" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Uyku ortasında uyanma sıklığınız nedir? (Haftada kaç kez, tekrar dalmanız ne kadar sürüyor?) *</label>
+            <input type="text" name="uykuOrtasiUyanma" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+          </div>
         </div>
 
-        <div class="p-6 space-y-8">
+        <!-- Egzersiz ve Hareket -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-person-running"></i>
+            <span>Egzersiz ve Hareket </span>
+          </h2>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Rutin günlük egzersiz ve hareket durumunuzu yazınız *</label>
+            <textarea name="egzersizRutin" rows="2" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5"></textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2">Egzersiz için istekli misiniz? *</span>
+              <div class="flex space-x-3"><label><input type="radio" name="egzersizIstekli" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="egzersizIstekli" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2">Egzersiz yapmaya engeliniz var mı? *</span>
+              <div class="flex space-x-3"><label><input type="radio" name="egzersizEngel" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="egzersizEngel" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2">Egzersiz sonrası aşırı yorgun/bitkin olur musunuz? *</span>
+              <div class="flex space-x-3"><label><input type="radio" name="egzersizYorgunluk" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="egzersizYorgunluk" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Egzersiz yapmanızı engelleyen bir şey var mı? Varsa açıklayınız. *</label>
+            <input type="text" name="egzersizEngelAciklama" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MODÜL 4: BESLENME & TÜKETİM -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6 hidden" data-step="3">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-utensils text-2xl"></i>
+              <h2 class="text-lg font-bold">4. Beslenme Alışkanlıkları</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">Günlük tüketim, besin tercihleri ve gıda duyarlılıkları</p>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Hangi yiyeceklere karşı duyarlılığınız var? Duyarlılıktan kastınız nedir? Açıklayın *</label>
+              <input type="text" name="gidaDuyarlilik" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Günde kaç öğün yersiniz? Hangi öğünler? Açıklayın *</label>
+                <input type="text" name="ogunSayisi" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Öğün atlamak sizi çok etkiler mi? Açıklayın *</label>
+                <input type="text" name="ogunAtlarsa" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">Haftada kaç öğün dışarıda yersiniz? *</label>
+              <div class="flex space-x-4 text-xs">
+                <label><input type="radio" name="disaridaYeme" value="0-1" onchange="updateRadio(this)"> 0-1</label>
+                <label><input type="radio" name="disaridaYeme" value="1-3" onchange="updateRadio(this)"> 1-3</label>
+                <label><input type="radio" name="disaridaYeme" value="3-5" onchange="updateRadio(this)"> 3-5</label>
+                <label><input type="radio" name="disaridaYeme" value="5+" onchange="updateRadio(this)"> 5+</label>
+              </div>
+            </div>
+
+            <!-- Checkbox Grubu -->
+            <div class="pt-4 border-t">
+              <label class="block text-xs font-bold text-slate-700 mb-2">Size uyanları işaretleyin:</label>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_hizli" onchange="updateCheckbox(this)"> <span>Hızlı Yerim</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_gec" onchange="updateCheckbox(this)"> <span>Gece Geç Yerim</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_zaman" onchange="updateCheckbox(this)"> <span>Yemek için zaman sorunum var</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_disari" onchange="updateCheckbox(this)"> <span>Öğünlerin yarıdan fazlası dışarıda</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_stresAz" onchange="updateCheckbox(this)"> <span>Stres altında az yerim</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_evHalki" onchange="updateCheckbox(this)"> <span>Ev halkı sağlıklı yiyecek sevmez</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_cok" onchange="updateCheckbox(this)"> <span>Çok Yerim</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_saglikliSevmem" onchange="updateCheckbox(this)"> <span>Sağlıklı denen yiyecekleri sevmem</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_seyahat" onchange="updateCheckbox(this)"> <span>Sık seyahat ederim</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_stresCok" onchange="updateCheckbox(this)"> <span>Stres altında çok yerim</span></label>
+                <label class="flex items-center space-x-2"><input type="checkbox" name="yemeTutum_evdePismez" onchange="updateCheckbox(this)"> <span>Evde pek yemek pişmez</span></label>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Sizce sağlıksız olan hangi yiyecekleri sık yersiniz? *</label>
+                <input type="text" name="sagliksizYiyecekler" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Sizce sağlıklı olan hangi yiyecekleri sık yersiniz? *</label>
+                <input type="text" name="saglikliYiyecekler" oninput="updateField(this)" class="w-full text-sm border border-slate-300 rounded-lg p-2.5">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Günlük Süreç ve Gıda Kalemi Tüketimi -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span>Besin Kalemleri Tüketimi </span>
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Kaç porsiyon sebze yersiniz? Hangileridir? *</label>
+              <input type="text" name="sebzeTuketimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Süt & ürünlerini kaç öğünde tüketirsiniz? Nereden alırsınız? *</label>
+              <input type="text" name="sutUrunleri" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Süt içer misiniz? Ne kadar? *</label>
+              <input type="text" name="sutIcme" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Ekmek tüketiminiz nasıldır? (Tür / Miktar) *</label>
+              <input type="text" name="ekmekTuketimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Salam, sucuk, sosis, hazır köfte tüketiminiz nasıldır? *</label>
+              <input type="text" name="islenmisEt" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tatlı, bisküvi, kek vb. tüketiminiz nasıldır? *</label>
+              <input type="text" name="tatliTuketimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Hamurişi, pastane ürünleri tüketiminiz nasıldır? *</label>
+              <input type="text" name="hamurisiTuketimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Pişmemiş ot / çiğ sebze tüketiminiz nasıldır? *</label>
+              <input type="text" name="cigSebze" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tuz kullanımınız nasıldır? *</label>
+              <input type="text" name="tuzKullanimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">İçme suyu olarak ne kullanıyorsunuz? *</label>
+              <input type="text" name="icmeSuyu" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Soğuk içecekler (kola, fanta, limonata) tüketiminiz? *</label>
+              <input type="text" name="sogukIcecek" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Yemeklerde yağ olarak neler kullanırsınız? *</label>
+              <input type="text" name="yemekYaglari" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kahve / Nescafe içer misiniz? Ne sıklıkla? İçmediğinizde arar mısınız? Açıklayınız *</label>
+            <input type="text" name="kahveTuketimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+          </div>
+        </div>
+
+        <!-- Günlük Menü & Sigara/Alkol -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-clock"></i>
+            <span>Normal Bir Günde Neler Yersiniz? </span>
+          </h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Kahvaltı *</label>
+              <input type="text" name="menu_kahvalti" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Öğle *</label>
+              <input type="text" name="menu_ogle" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Akşam *</label>
+              <input type="text" name="menu_aksam" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Atıştırmalar *</label>
+              <input type="text" name="menu_atistirma" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">İçecekler *</label>
+              <input type="text" name="menu_icecekler" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+          </div>
+
+          <!--Sigara / Alkol -->
+          <div class="pt-4 border-t space-y-3">
+            <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wide">Sigara / Alkol Alışkanlıkları </h3>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Sigara kullanır mısınız? Ne kadar? Bırakmaya çalıştınız mı? Geçmişte kullandınız mı? *</label>
+              <input type="text" name="sigaraKullanimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Sigara dumanına maruz kalıyor musunuz? Geçmişte kaldınız mı? *</label>
+              <input type="text" name="pasifIcici" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Alkol alır mısınız? Tür ve miktarını açıklayınız. Geçmiş kullanımınız varsa belirtiniz. *</label>
+              <input type="text" name="alkolKullanimi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MODÜL 5: SOSYAL YAŞAM & YAŞAM SKALASI  -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6 hidden" data-step="4">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-users text-2xl"></i>
+              <h2 class="text-lg font-bold">5. Sosyal Yaşam & Denge</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">İlişkiler, sosyal çevre ve 1-10 yaşam memnuniyeti ölçeği</p>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-2">İlişki Durumunuz *</label>
+              <div class="flex flex-wrap gap-4 text-xs">
+                <label><input type="radio" name="iliskiDurumu" value="Bekar" onchange="updateRadio(this)"> Bekar</label>
+                <label><input type="radio" name="iliskiDurumu" value="Evli" onchange="updateRadio(this)"> Evli</label>
+                <label><input type="radio" name="iliskiDurumu" value="Nişanlı" onchange="updateRadio(this)"> Nişanlı</label>
+                <label><input type="radio" name="iliskiDurumu" value="Boşanmış" onchange="updateRadio(this)"> Boşanmış</label>
+                <label><input type="radio" name="iliskiDurumu" value="Uzun Süreli İlişki" onchange="updateRadio(this)"> Uzun Süreli İlişki</label>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Kimlerle aynı evde yaşıyorsunuz? (Eş, çocuk, evcil hayvan vb.) *</label>
+              <input type="text" name="evdeKimlerVar" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Bugünkü işiniz *</label>
+                <input type="text" name="bugunkuIs" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Önceki işiniz *</label>
+                <input type="text" name="oncekiIs" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+              </div>
+            </div>
+
+            <!-- Destek Grupları -->
+            <div class="pt-4 border-t space-y-3">
+              <label class="block text-xs font-bold text-slate-700 mb-1">Duygusal destek alabildiğiniz kimler vardır? (Size uyan tümünü işaretleyin)</label>
+              <div class="flex flex-wrap gap-4 text-xs">
+                <label><input type="checkbox" name="destek_es" onchange="updateCheckbox(this)"> Eş</label>
+                <label><input type="checkbox" name="destek_aile" onchange="updateCheckbox(this)"> Aile</label>
+                <label><input type="checkbox" name="destek_arkadaslar" onchange="updateCheckbox(this)"> Arkadaşlar</label>
+                <label><input type="checkbox" name="destek_dini" onchange="updateCheckbox(this)"> Dini / Ruhani</label>
+                <label><input type="checkbox" name="destek_evcil" onchange="updateCheckbox(this)"> Evcil Hayvan</label>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Diğer destek alabildiğiniz kimler vardır?</label>
+                <input type="text" name="destek_diger" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Dini ya da ruhani yönünüz güçlü müdür? *</label>
+                  <div class="flex space-x-3 text-xs">
+                    <label><input type="radio" name="ruhaniYon" value="Evet" onchange="updateRadio(this)"> Evet</label>
+                    <label><input type="radio" name="ruhaniYon" value="Hayır" onchange="updateRadio(this)"> Hayır</label>
+                  </div>
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Evet ise açıklayınız:</label>
+                  <input type="text" name="ruhaniYonAciklama" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-10 Yaşam Skalası -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div>
+            <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-1">
+              <i class="fa-solid fa-sliders"></i>
+              <span>Yaşam Memnuniyeti Puanlaması</span>
+            </h2>
+            <p class="text-xs text-slate-500">
+              Yaşamınızın aşağıdaki alanlarında sizce işler nasıl gidiyor? Puanlayın. Size uymayanlar için (-) seçeneğini işaretleyiniz. (1 Kötü, 10 Çok İyi)
+            </p>
+          </div>
+
+          <div class="space-y-4 pt-2" id="lifeScaleContainer"></div>
+        </div>
+
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MODÜL 6: HASTALIKLAR & AİLE -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6 hidden" data-step="5">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-stethoscope text-2xl"></i>
+              <h2 class="text-lg font-bold">6. Hastalıklar & Aile Hikayesi</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">Teşhis geçmişi, ürogenital sistem ve genetik arka plan</p>
+          </div>
+
+          <div class="p-6 space-y-4">
+            <div>
+              <p class="text-xs text-slate-500 mb-2">
+                Daha önce konulmuş olan teşhisler şu anda halen devam etmekte ise "Şu anda", geçmişte geçirdiyseniz "Geçmişte", hiç olmadıysa "Yok" kısmını işaretleyin.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2" id="diseasesContainer"></div>
+
+            <div class="space-y-3 pt-4 border-t">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">İşaretlemiş olduğunuz hastalıklar hakkında bilgi veriniz.</label>
+                <textarea name="hastaliklarHakkindaBilgi" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Geçmişte Kolesterol - Trigliserit ölçümleriniz yüksek mi? Belirtiniz.</label>
+                <input type="text" name="kolesterolTrigliserit" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tansiyon ölçümleriniz yüksek mi? Evet ise geçmişten bugüne takip değerlerinizi yazınız.</label>
+                <input type="text" name="tansiyonDegerleri" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--  Erkek Sağlığı & Ürogenital Yakınmalar -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-mars"></i>
+            <span>Ürogenital Yakınmalar & Erkek Sağlığı </span>
+          </h2>
           
-          <!-- Dinamik Sistem Yakınmaları Grubu -->
-          <div class="border-b pb-6 space-y-6">
-            <h3 class="font-bold text-gray-800 text-base">Son 6 Ay İçindeki Yakınmalar (Sistem Sorgulaması)</h3>
-
-            <!-- Tırnaklar & Üriner -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Tırnaklar</span>
-                  <button type="button" onclick="addSymptomRow('tirnakBody', tirnakListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="tirnakBody" class="space-y-2"></div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Üriner</span>
-                  <button type="button" onclick="addSymptomRow('urinerBody', urinerListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="urinerBody" class="space-y-2"></div>
-              </div>
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Ürogenital Sorunlar</span>
+              <button type="button" onclick="addDynamicSelectRow('urogenitalTable', ['İdrarda yanma', 'Sık idrara çıkma', 'Kesik kesik idrar', 'Zayıf idrar akımı', 'İdrar kaçırma', 'Cinsel istek azalması', 'Sertleşme sorunu', 'Ağrılı boşalma'])" class="text-xs bg-[#587c29]/10 text-[#587c29] border border-[#587c29]/30 px-2.5 py-1 rounded-md font-semibold hover:bg-[#587c29]/20">
+                + Yakınma Ekle
+              </button>
             </div>
+            <table class="w-full text-left text-xs border border-slate-200 rounded-lg" id="urogenitalTable">
+              <thead class="bg-slate-50 text-slate-600">
+                <tr>
+                  <th class="p-2 border-b">Yakınma</th>
+                  <th class="p-2 border-b w-32">Şiddet</th>
+                  <th class="p-2 border-b w-10 text-center">Sil</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
 
-            <!-- Solunum & Sindirim -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Solunum</span>
-                  <button type="button" onclick="addSymptomRow('solunumBody', solunumListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="solunumBody" class="space-y-2"></div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Sindirim</span>
-                  <button type="button" onclick="addSymptomRow('sindirimBody', sindirimListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="sindirimBody" class="space-y-2"></div>
-              </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Gece idrara kaç kez kalkarsınız? *</label>
+              <input type="text" name="geceIdrarSayisi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
             </div>
-
-            <!-- Cilt, Kuruluk & Kaşıntı -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Cilt Sorunları</span>
-                  <button type="button" onclick="addSymptomRow('ciltBody', ciltListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="ciltBody" class="space-y-2"></div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Kuruluk</span>
-                  <button type="button" onclick="addSymptomRow('kurulukBody', kurulukListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="kurulukBody" class="space-y-2"></div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-xs text-gray-700">Kaşıntı</span>
-                  <button type="button" onclick="addSymptomRow('kasintiBody', kasintiListesi)" class="text-[11px] bg-klinik-500 text-white px-2 py-1 rounded">+ Ekle</button>
-                </div>
-                <div id="kasintiBody" class="space-y-2"></div>
-              </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">PSA testi yaptırdınız mı? Sonucu yazınız. *</label>
+              <input type="text" name="psaTestSonucu" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
             </div>
           </div>
 
-          <!-- Ağız ve Diş Sağlığı & Toksinler (Sayfa 33-34) -->
-          <div class="border-b pb-6 space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">Ağız/Diş Sağlığı & Çevresel Toksinler</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="md:col-span-3">
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Amalgam (gümüş rengi) dolgunuz var mı? Varsa kaç tane? Kaç yıldır ağzınızda?</label>
-                <input type="text" name="amalgamDolgu" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border">
-                <span class="text-xs font-semibold text-gray-700 block mb-1">Diş etleriniz fırçalarken kanar mı? *</span>
-                <div class="flex gap-4 mt-1">
-                  <label class="text-xs"><input type="radio" name="disEtiKanama" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="disEtiKanama" value="Hayır"> Hayır</label>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 p-3 rounded-lg border md:col-span-2">
-                <span class="text-xs font-semibold text-gray-700 block mb-1">Dişlerinizde çok sayıda kaplama, kanal tedavisi gibi işlemler yapıldı mı? *</span>
-                <div class="flex gap-4 mt-1">
-                  <label class="text-xs"><input type="radio" name="kanalTedavi" value="Evet"> Evet</label>
-                  <label class="text-xs"><input type="radio" name="kanalTedavi" value="Hayır"> Hayır</label>
-                </div>
-              </div>
+          <div class="space-y-3 pt-3 border-t">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Migren / Kronik baş ağrısı sorununuz var mı? Tetikleyen durumlar? </label>
+              <input type="text" name="migrenTetikleyiciler" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
             </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Görmüş olduğunuz kanser tedavisi hakkında bilgi veriniz.</label>
+              <input type="text" name="kanserTedaviGecmisi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Diğer rahatsızlıklar ve ek bilgiler</label>
+              <textarea name="digerRahatsizliklar" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+            </div>
+          </div>
+        </div>
 
-            <!-- Çevre & Toksin Checkbox -->
-            <div class="space-y-3 pt-2">
-              <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">Aşağıdakiler sizi ciddi olarak olumsuz olarak etkiler mi?</label>
-                <div class="flex flex-wrap gap-4 bg-gray-50 p-3 rounded-lg border">
-                  <label class="text-xs"><input type="checkbox" name="etki_sigaraDuman"> Sigara Dumanı</label>
-                  <label class="text-xs"><input type="checkbox" name="etki_parfum"> Parfüm Kolonya</label>
-                  <label class="text-xs"><input type="checkbox" name="etki_egzos"> Egzos Dumanı</label>
+        <!--  Aile Hikayesi -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-people-roof"></i>
+            <span>Aile Hikayesi </span>
+          </h2>
+
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-bold text-slate-700 uppercase tracking-wide">Aile Bireyleri</span>
+              <button type="button" onclick="addFamilyRow()" class="text-xs bg-[#587c29]/10 text-[#587c29] border border-[#587c29]/30 px-2.5 py-1 rounded-md font-semibold hover:bg-[#587c29]/20">
+                + Birey Ekle
+              </button>
+            </div>
+            <table class="w-full text-left text-xs border border-slate-200 rounded-lg" id="aileTable">
+              <thead class="bg-slate-50 text-slate-600">
+                <tr>
+                  <th class="p-2 border-b w-44">Birey</th>
+                  <th class="p-2 border-b w-24">Yaş</th>
+                  <th class="p-2 border-b">(Yaşamıyorsa) Vefat Yaşı</th>
+                  <th class="p-2 border-b w-10 text-center">Sil</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Aile bireylerinizdeki önemli rahatsızlıkları yazınız (Anne, Baba, Kardeş)</label>
+            <textarea name="aileOnemliHastaliklar" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Aile bireyleri kısmında vermek istediğiniz diğer bilgiler</label>
+            <input type="text" name="aileDigerBilgiler" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MODÜL 7: SİSTEMLER, TOKSİNLER & DÜŞÜNCELER  -->
+      <!-- ========================================== -->
+      <div class="form-section space-y-6 hidden" data-step="6">
+        
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="bg-[#587c29] p-5 text-white">
+            <div class="flex items-center space-x-3">
+              <i class="fa-solid fa-comment-dots text-2xl"></i>
+              <h2 class="text-lg font-bold">7. Sistem Sorguları & Değerlendirme</h2>
+            </div>
+            <p class="text-xs text-white/80 mt-1 pl-9">Ayrıntılı semptomlar, toksik maruziyetler ve genel hedefler</p>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <h3 class="text-[#587c29] font-bold text-sm flex items-center space-x-2 border-b pb-2">
+              <i class="fa-solid fa-list-check"></i>
+              <span>Son 6 Ay İçindeki Yakınmalar </span>
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- Tırnaklar -->
+              <div class="border border-slate-200 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-slate-700">Tırnaklar</span>
+                  <button type="button" onclick="addSystemComplaintRow('tirnakTable', ['Beyaz lekeler/çizgiler', 'Kırılgan zayıf', 'Soyulma', 'Mantar (el)', 'Mantar (ayak)', 'Çukurlar çöküntüler', 'Çizgiler', 'Oluklar', 'Kökünde soyulma düzensizlik'])" class="text-[11px] text-[#587c29] font-semibold">+ Ekle</button>
                 </div>
+                <table class="w-full text-xs" id="tirnakTable"><tbody></tbody></table>
               </div>
 
-              <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">İşyeriniz ya da evde aşağıdakilere maruz kalıyor musunuz?</label>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-gray-50 p-3 rounded-lg border">
-                  <label class="text-xs"><input type="checkbox" name="maruz_kuf"> Küf, Rutubet</label>
-                  <label class="text-xs"><input type="checkbox" name="maruz_temizlik"> Temizlik kimyasalları</label>
-                  <label class="text-xs"><input type="checkbox" name="maruz_halilar"> Halılar</label>
-                  <label class="text-xs"><input type="checkbox" name="maruz_agirMetal"> Kurşun, cıva gibi ağır metaller</label>
-                  <label class="text-xs"><input type="checkbox" name="maruz_eskiBoya"> Eski badana ve boyalar</label>
-                  <label class="text-xs"><input type="checkbox" name="maruz_yeniBoya"> Yeni boyanmış/cilalanmış ortamlar</label>
-                  <label class="text-xs"><input type="checkbox" name="maruz_pestisit"> Pestisitler</label>
+              <!-- Üriner -->
+              <div class="border border-slate-200 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-slate-700">Üriner </span>
+                  <button type="button" onclick="addSystemComplaintRow('urinerTable', ['İdrarla yanma hissi', 'Sık idrar'])" class="text-[11px] text-[#587c29] font-semibold">+ Ekle</button>
                 </div>
+                <table class="w-full text-xs" id="urinerTable"><tbody></tbody></table>
               </div>
 
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Geçmişte uzun süreli maruz kaldığınız bir kimyasal madde oldu mu?</label>
-                <input type="text" name="kimyasalMaruziyet" class="w-full border rounded-lg p-2.5 text-sm">
+              <!-- Solunum -->
+              <div class="border border-slate-200 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-slate-700">Solunum </span>
+                  <button type="button" onclick="addSystemComplaintRow('solunumTable', ['Kötü kokulu nefes', 'Kuru öksürük', 'Balgamlı öksürük', 'Saman nezlesi', 'Burun tıkanıklığı', 'Burun kanamaları', 'Geniz akıntısı', 'Sinüs dolgunluğu', 'Sinüzit', 'Horlama', 'Boğaz ağrısı'])" class="text-[11px] text-[#587c29] font-semibold">+ Ekle</button>
+                </div>
+                <table class="w-full text-xs" id="solunumTable"><tbody></tbody></table>
               </div>
+
+              <!-- Sindirim -->
+              <div class="border border-slate-200 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-slate-700">Sindirim </span>
+                  <button type="button" onclick="addSystemComplaintRow('sindirimTable', ['Dişetlerinde kanama', 'Dışkıda kan', 'Karında gaz şişkinlik', 'Ağızda yaralar', 'Ağız çevresinde yaralar', 'Ağız çevresinde uçuk', 'Kabızlık', 'Ağız kenarında çatlaklar', 'İshal', 'Ağız kuruluğu', 'Hemoroid', 'Bulantı', 'Dışkıda kötü koku', 'Karın ağrıları'])" class="text-[11px] text-[#587c29] font-semibold">+ Ekle</button>
+                </div>
+                <table class="w-full text-xs" id="sindirimTable"><tbody></tbody></table>
+              </div>
+
+              <!-- Cilt Sorunları -->
+              <div class="border border-slate-200 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-slate-700">Cilt Sorunları </span>
+                  <button type="button" onclick="addSystemComplaintRow('ciltTable', ['Sırtta akne', 'Göğüste akne', 'Yüzde akne', 'Omuzda akne', 'Sellülit', 'Göz altında siyahlıklar', 'Çizgiler oluklar', 'Kolayca morarmalar', 'Ekzema', 'Genital bölgede uçuk', 'Ürtiker', 'Yağlı cilt', 'Soluk cilt', 'Psoriasis', 'Döküntüler', 'Zona', 'Vitiligo'])" class="text-[11px] text-[#587c29] font-semibold">+ Ekle</button>
+                </div>
+                <table class="w-full text-xs" id="ciltTable"><tbody></tbody></table>
+              </div>
+
+              <!-- Kuruluk & Kaşıntı -->
+              <div class="border border-slate-200 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-xs font-bold text-slate-700">Kuruluk & Kaşıntı </span>
+                  <button type="button" onclick="addSystemComplaintRow('kurulukTable', ['Kuruluk: Gözler', 'Kuruluk: Ayaklarda soyulma', 'Kuruluk: Saç', 'Kuruluk: Ellerde çatlama', 'Kuruluk: Ağız', 'Kuruluk: Kepek', 'Kaşıntı: Anüs çevresi', 'Kaşıntı: Kulak kanalı', 'Kaşıntı: Saçlı deri', 'Kaşıntı: Genel cilt'])" class="text-[11px] text-[#587c29] font-semibold">+ Ekle</button>
+                </div>
+                <table class="w-full text-xs" id="kurulukTable"><tbody></tbody></table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!--  Ağız Diş & Çevre / Toksinler -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-solid fa-shield-virus"></i>
+            <span>Ağız Diş Sağlığı & Toksik Maruziyet </span>
+          </h2>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Amalgam (gümüş rengi) dolgunuz var mı? Varsa kaç tane? Kaç yıldır ağzınızda? </label>
+            <input type="text" name="amalgamDolgu" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2">Diş etleriniz fırçalarken kanar mı? *</span>
+              <div class="flex space-x-3"><label><input type="radio" name="disEtiKanama" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="disEtiKanama" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border">
+              <span class="font-bold block mb-2">Dişlerinizde çok sayıda kaplama / kanal tedavisi yapıldı mı? *</span>
+              <div class="flex space-x-3"><label><input type="radio" name="kanalKaplama" value="Evet" onchange="updateRadio(this)"> Evet</label><label><input type="radio" name="kanalKaplama" value="Hayır" onchange="updateRadio(this)"> Hayır</label></div>
             </div>
           </div>
 
-          <!-- Düşünceler & Klinik Hedefler (Sayfa 35-36) -->
-          <div class="space-y-4">
-            <h3 class="font-bold text-gray-800 text-base">Düşünceler & Klinik Hedefler</h3>
-            <p class="text-xs text-gray-500">Aşağıdaki soruları ayrıntılı ve açık olarak yanıtlayınız.</p>
+          <!-- Toksin Maruziyeti -->
+          <div class="pt-4 border-t space-y-3">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Aşağıdakiler sizi ciddi olarak olumsuz etkiler mi?</label>
+            <div class="flex flex-wrap gap-4 text-xs">
+              <label><input type="checkbox" name="toksin_sigaraDuman" onchange="updateCheckbox(this)"> Sigara Dumanı</label>
+              <label><input type="checkbox" name="toksin_parfum" onchange="updateCheckbox(this)"> Parfüm / Kolonya</label>
+              <label><input type="checkbox" name="toksin_egzos" onchange="updateCheckbox(this)"> Egzos Dumanı</label>
+            </div>
+            <label class="block text-xs font-bold text-slate-700 mb-1 pt-2">İşyeriniz ya da evde aşağıdakilere maruz kalıyor musunuz?</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+              <label><input type="checkbox" name="toksin_kuf" onchange="updateCheckbox(this)"> Küf, Rutubet</label>
+              <label><input type="checkbox" name="toksin_temizlik" onchange="updateCheckbox(this)"> Temizlik kimyasalları</label>
+              <label><input type="checkbox" name="toksin_halilar" onchange="updateCheckbox(this)"> Halılar</label>
+              <label><input type="checkbox" name="toksin_agirMetal" onchange="updateCheckbox(this)"> Kurşun, cıva vb. ağır metaller</label>
+              <label><input type="checkbox" name="toksin_eskiBoya" onchange="updateCheckbox(this)"> Eski badana ve boyalar</label>
+              <label><input type="checkbox" name="toksin_yeniBoya" onchange="updateCheckbox(this)"> Yeni boya / tadilat ortamı</label>
+              <label><input type="checkbox" name="toksin_pestisit" onchange="updateCheckbox(this)"> Pestisitler</label>
+            </div>
+            <div class="pt-2">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Geçmişte uzun süreli maruz kaldığınız bir kimyasal madde oldu mu?</label>
+              <input type="text" name="uzunSureliKimyasal" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+            </div>
+          </div>
+        </div>
 
-            <div class="space-y-3">
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Sağlığınız en son ne zaman "iyi" idi? *</label>
-                <input type="text" name="hedef_iyiZaman" class="w-full border rounded-lg p-2.5 text-sm">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Sizin düşüncenize göre, sağlığınızın bozulmasında neler rol oynamış olabilir? *</label>
-                <textarea name="hedef_bozulmaRol" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Sizce neler/ne yapmanız sağlığınızı daha bozuyor? Neler düzeltiyor? *</label>
-                <textarea name="hedef_iyiKotuGelen" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Bugüne kadarki tedavilerinizde eksik olan ne ya da neler vardı? *</label>
-                <textarea name="hedef_tedaviEksik" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Sağlığınızı düzeltmeyi hedeflediğiniz, size göre en önemli birkaç konu hangileridir? *</label>
-                <textarea name="hedef_onemliKonular" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Bugüne kadarki tedavileriniz arasında size olumsuz etkisi olanlar nelerdi? *</label>
-                <textarea name="hedef_olumsuzTedaviler" rows="2" class="w-full border rounded-lg p-2.5 text-sm"></textarea>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1">Bu formda sorulmamış olan ya da eklemek istediğiniz tüm serbest notlar:</label>
-                <textarea name="serbestNotlar" rows="4" class="w-full border rounded-lg p-2.5 text-sm" placeholder="Ek şikayetler, beklentiler, hikayeniz..."></textarea>
-              </div>
+        <!-- Düşünceler & Kapanış -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-[#587c29] font-bold text-base flex items-center space-x-2 border-b pb-3 mb-2">
+            <i class="fa-regular fa-comment-dots"></i>
+            <span>Düşünceler & Değerlendirme </span>
+          </h2>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Sağlığınız en son ne zaman "iyi" idi? *</label>
+            <input type="text" name="saglikNeZamanIyi" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Sizin düşüncenize göre, sağlığınızın bozulmasında neler rol oynamış olabilir? *</label>
+            <textarea name="bozulmaNedenleri" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Sizce neler/ne yapmanız sağlığınızı daha bozuyor? Neler düzeltiyor? *</label>
+            <textarea name="bozanVeDuzeltenler" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Sizin düşüncenize göre, bugüne kadarki tedavilerinizde eksik olan ne ya da neler vardı? *</label>
+            <textarea name="eksikTedaviler" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Sağlığınızı düzeltmeyi hedeflediğiniz, size göre en önemli birkaç konu hangileridir? *</label>
+            <textarea name="onemliKonular" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Bugüne kadarki tedavileriniz arasında size olumsuz etkisi olanlar nelerdi? * </label>
+            <textarea name="olumsuzEtkiliTedaviler" rows="2" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Bu formda size sorulmamış olan veya eklemek istediğiniz diğer sağlık sorunlarınız:</label>
+            <textarea name="ekSorunlarSerbest" rows="3" oninput="updateField(this)" class="w-full text-sm border rounded-lg p-2.5"></textarea>
+          </div>
+
+          <!-- YALNIZCA PDF OLARAK AKTAR PANELİ (JSON KALDIRILDI) -->
+          <div class="p-4 bg-rose-50/70 border border-rose-200 rounded-xl flex flex-wrap items-center justify-between gap-3 mt-6">
+            <div>
+              <span class="text-xs font-bold text-rose-800 block">Formu Tamamla & PDF Çıktısı Al</span>
+              <span class="text-[11px] text-slate-600">Yazdırma ekranında yazıcıyı 'PDF Olarak Kaydet' olarak değiştirip 'Kaydet' butonuna basınız.</span>
+            </div>
+            <div>
+              <button type="button" onclick="exportAsPDF()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center space-x-2 transition">
+                <i class="fa-solid fa-file-pdf text-sm"></i>
+                <span>Tüm Formu PDF Olarak Aktar</span>
+              </button>
             </div>
           </div>
 
         </div>
-      </section>
 
-      <!-- ========================================================================= -->
-      <!-- ALT GEZİNME & AKSIYON BUTONLARI -->
-      <!-- ========================================================================= -->
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
-        <button type="button" id="prevBtn" onclick="prevStep()" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2">
-          <i class="fa-solid fa-arrow-left"></i> Önceki Adım
-        </button>
-
-        <div class="flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto">
-          <button type="button" onclick="savePatientData(true)" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1.5 shadow-sm">
-            <i class="fa-solid fa-bookmark"></i>
-            <span>Taslak Olarak Sakla</span>
-          </button>
-          
-          <button type="button" id="nextBtn" onclick="nextStep()" class="w-full sm:w-auto bg-klinik-500 hover:bg-klinik-600 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2 shadow-sm">
-            <span>Sonraki Adım</span> <i class="fa-solid fa-arrow-right"></i>
-          </button>
-
-          <button type="button" id="submitBtn" onclick="finishForm()" class="hidden w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2 shadow-md">
-            <i class="fa-solid fa-circle-check"></i>
-            <span>FORMU TAMAMLADIM, GÖNDER</span>
-          </button>
-        </div>
       </div>
 
     </form>
+
+    <!-- SAYFA ALTI GEZİNME BUTONLARI (NO-PRINT) -->
+    <div class="flex justify-between items-center mt-6 no-print">
+      <button id="prevBtn" onclick="changeStep(-1)" class="px-4 py-2 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg transition disabled:opacity-30 disabled:pointer-events-none">
+        <i class="fa-solid fa-chevron-left mr-1"></i> Önceki Bölüm
+      </button>
+
+      <span id="stepCounter" class="text-xs font-bold text-slate-500">Bölüm 1 / 7</span>
+
+      <button id="nextBtn" onclick="changeStep(1)" class="px-4 py-2 bg-[#587c29] hover:bg-[#486621] text-white text-xs font-bold rounded-lg shadow-xs transition">
+        Sonraki Bölüm <i class="fa-solid fa-chevron-right ml-1"></i>
+      </button>
+    </div>
+
   </main>
 
-  <!-- YAZDIRMA/KLİNİK BİLGİ ALTI -->
-  <footer class="mt-auto py-4 text-center text-xs text-gray-500 border-t bg-white">
-    <div class="max-w-7xl mx-auto px-4">
-      <p>© 2026 Dr. Ayşe Betül - Fonksiyonel Tıp & Sağlıklı Yaşam Kliniği</p>
-      <p class="text-[10px] text-gray-400 mt-0.5">Tüm veriler cihazınızda şifreli/güvenli olarak saklanır.</p>
-    </div>
+  <!-- FOOTER / ALT BİLGİ ALANI -->
+  <footer class="text-center py-5 text-xs text-slate-500 border-t border-slate-200 mt-12 bg-white no-print">
+    <p>© 2026 Dr. Ayşe Betül ATİK - Fonksiyonel Tıp Hekimi</p>
   </footer>
 
-  <!-- ========================================================================= -->
-  <!-- JAVASCRIPT: UYGULAMA MOTORU & VERİ MİMARİSİ -->
-  <!-- ========================================================================= -->
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT: AUTO-SAVE & DİNAMİK YÖNETİM -->
+  <!-- ========================================== -->
   <script>
-    // 1. TIBBİ DROPDOWN VE MATRİS SABİTLERİ (36 Sayfadaki tüm veriler)
-    const hastalikListesi = [
-      "Huzursuz Bacak Sendromu", "Reflü", "Ülser", "Safra Taşları", "Hepatit", "Sarılık",
-      "Fibromiyalji", "Kronik Ağrılar", "Ekzema", "Akne", "Deri Kanseri", "Astım",
-      "Sinüzit", "Uyku Apnesi", "Anjina", "Kalp Krizi", "Hipertansiyon", "Yüksek Kolesterol/Trigliserid",
-      "Ritm Bozukluğu", "Kalp Kapak Hastalığı", "Mitral Kapak Prolapsusu", "Böbrek Taşları", "Huzursuz Mesane Sendromu",
-      "Sık Mantar Enfeksiyonları", "Sık İdrar Yolu Enfeksiyonları", "Nöbetler/Epilepsi", "Dikkat Eksikliği/Hiperaktivite",
-      "Migren", "Depresyon", "Anksiyete", "Multipl Skleroz", "Kronik Yorgunluk Sendromu", "Akciğer Rahatsızlıkları",
-      "Meme Kanseri", "Kalın barsak Kanseri", "Yumurtalık (Over) Kanseri", "Prostat Kanseri", "Mesane Kanseri"
-    ];
-
-    const tirnakListesi = [
-      "Beyaz lekeler/çizgiler", "Kırılgan zayıf", "Soyulma", "Mantar (el)", "Mantar (ayak)", 
-      "Çukurlar çöküntüler", "Çizgiler oluklar", "Kökünde soyulma düzensizlik"
-    ];
-
-    const urinerListesi = [
-      "İdrarla yanma hissi", "Sık idrar", "Gece sık idrara çıkma", "Kesik kesik idrar yapma"
-    ];
-
-    const solunumListesi = [
-      "Kötü kokulu nefes", "Kuru öksürük", "Balgamlı öksürük", "Saman nezlesi", "Burun tıkanıklığı",
-      "Burun kanamaları", "Geniz akıntısı", "Sinüs dolgunluğu", "Sinüzit", "Horlama", "Boğaz ağrısı"
-    ];
-
-    const sindirimListesi = [
-      "Dişetlerinde kanama", "Dışkıda kan", "Karında gaz şişkinlik", "Ağızda yaralar", 
-      "Ağız çevresinde yaralar", "Ağız çevresinde uçuk", "Kabızlık", "Ağız kenarında çatlaklar", 
-      "İshal", "Ağız Kuruluğu", "Hemoroid", "Bulantı", "Dışkıda kötü koku", "Karın ağrıları"
-    ];
-
-    const ciltListesi = [
-      "Sırtta akne", "Göğüste akne", "Yüzde akne", "Omuzda akne", "Sellülit", "Göz altında siyahlıklar",
-      "Çizgiler oluklar", "Kolayca morarmalar", "Ekzema", "Genital bölgede uçuk", "Ürtiker", 
-      "Yağlı cilt", "Soluk cilt", "Psoriasis", "Döküntüler", "Zona", "Vitiligo"
-    ];
-
-    const kurulukListesi = [
-      "Gözler", "Ayaklarda Çatlama soyulma", "Saç", "Ellerde Çatlama soyulma", "Ağız", "Saçlı deri", "Kepek", "Genel olarak Cilt"
-    ];
-
-    const kasintiListesi = [
-      "Anüs Çevresi", "Kulak kanalı", "Gözler", "Ayaklar", "Saçlı deri", "Genel olarak cilt"
-    ];
-
-    const skalaAlanlari = [
-      { key: "skala_genel", label: "Genel Olarak" },
-      { key: "skala_okul", label: "Okul" },
-      { key: "skala_is", label: "İş" },
-      { key: "skala_sosyal", label: "Sosyal Yaşam" },
-      { key: "skala_arkadas", label: "Yakın Arkadaşlar" },
-      { key: "skala_cinsellik", label: "Cinsellik" },
-      { key: "skala_partner", label: "Kız/Erkek Arkadaşınız" },
-      { key: "skala_cocuklar", label: "Çocuklar" },
-      { key: "skala_ebeveyn", label: "Ebeveyn" },
-      { key: "skala_es", label: "Eşiniz" }
-    ];
-
-    // Stepper Adım Tanımları
-    const steps = [
-      { id: 1, title: "Genel Bilgiler", icon: "fa-id-card" },
-      { id: 2, title: "Şikayet & Bristol", icon: "fa-notes-medical" },
-      { id: 3, title: "Stres & Uyku", icon: "fa-moon" },
-      { id: 4, title: "Beslenme", icon: "fa-utensils" },
-      { id: 5, title: "Sosyal Skala", icon: "fa-users" },
-      { id: 6, title: "Tanılar & Aile", icon: "fa-file-waveform" },
-      { id: 7, title: "Sistem & Düşünceler", icon: "fa-stethoscope" }
-    ];
-
-    let currentStep = 1;
+    let currentStep = 0;
+    const totalSteps = 7;
     let currentPatientId = null;
+    let patientData = {};
 
-    // 2. SAYFA YÜKLENDİĞİNDE BAŞLATMA
-    window.onload = function() {
-      renderStepperNavigation();
-      buildHastaliklarTable();
-      buildSkalaInputs();
-      initializePatientStore();
-      setupAutoSaveListeners();
-      showStep(1);
-    };
+    const lifeScaleItems = [
+      { id: 'genel', label: 'Genel Olarak' },
+      { id: 'okul', label: 'Okul' },
+      { id: 'is', label: 'İş' },
+      { id: 'sosyal', label: 'Sosyal Yaşam' },
+      { id: 'arkadas', label: 'Yakın Arkadaşlar' },
+      { id: 'cinsellik', label: 'Cinsellik' },
+      { id: 'partner', label: 'Kız / Erkek Arkadaşınız' },
+      { id: 'cocuklar', label: 'Çocuklar' },
+      { id: 'ebeveyn', label: 'Ebeveyn' },
+      { id: 'es', label: 'Eşiniz' }
+    ];
 
-    // 3. STEPPER GEZİNTİ MENÜSÜNÜ OLUŞTURMA
-    function renderStepperNavigation() {
-      const nav = document.getElementById('stepperNav');
-      nav.innerHTML = steps.map(s => `
-        <button type="button" onclick="goToStep(${s.id})" id="stepBtn_${s.id}" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition ${s.id === 1 ? 'bg-klinik-500 text-white border-klinik-600 shadow-sm' : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'}">
-          <span class="w-5 h-5 rounded-full ${s.id === 1 ? 'bg-white text-klinik-600' : 'bg-gray-200 text-gray-700'} flex items-center justify-center text-[10px] font-bold">${s.id}</span>
-          <i class="fa-solid ${s.icon}"></i>
-          <span>${s.title}</span>
-        </button>
-      `).join('');
-    }
+    const diseasesList = [
+      'Huzursuz Bacak Sendromu', 'Reflü', 'Ülser', 'Safra Taşları', 'Hepatit', 'Sarılık',
+      'Fibromiyalji', 'Kronik Ağrılar', 'Ekzema', 'Akne', 'Deri Kanseri', 'Astım',
+      'Sinüzit', 'Uyku Apnesi', 'Anjina', 'Kalp Krizi', 'Hipertansiyon', 'Yüksek Kolesterol/Trigliserid',
+      'Ritm Bozukluğu', 'Kalp Kapak Hastalığı', 'Mitral Kapak Prolapsusu', 'Böbrek Taşları',
+      'Huzursuz Mesane Sendromu', 'Sık Mantar Enfeksiyonları', 'Sık İdrar Yolu Enfeksiyonları',
+      'Nöbetler/Epilepsi', 'Dikkat Eksikliği/Hiperaktivite', 'Migren', 'Depresyon', 'Anksiyete',
+      'Multipl Skleroz', 'Kronik Yorgunluk Sendromu', 'Akciğer Hastalığı', 'Meme Kanseri',
+      'Kalın Barsak Kanseri', 'Prostat Rahatsızlığı/Kanser', 'Mesane Rahatsızlığı'
+    ];
 
-    function showStep(stepNum) {
-      currentStep = stepNum;
-      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-      const activeEl = document.getElementById(`step${stepNum}`);
-      if (activeEl) activeEl.classList.add('active');
+    window.addEventListener('DOMContentLoaded', () => {
+      initLifeScales();
+      initDiseasesMatrix();
+      initPatientSystem();
+      goToTab(0);
+    });
 
-      // Buton güncellemeleri
-      steps.forEach(s => {
-        const btn = document.getElementById(`stepBtn_${s.id}`);
-        if (btn) {
-          if (s.id === stepNum) {
-            btn.className = "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition bg-klinik-500 text-white border-klinik-600 shadow-sm";
-            btn.querySelector('span').className = "w-5 h-5 rounded-full bg-white text-klinik-600 flex items-center justify-center text-[10px] font-bold";
-          } else {
-            btn.className = "flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100";
-            btn.querySelector('span').className = "w-5 h-5 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center text-[10px] font-bold";
-          }
-        }
-      });
-
-      // Alt Gezinme Butonları
-      document.getElementById('prevBtn').style.visibility = stepNum === 1 ? 'hidden' : 'visible';
-      if (stepNum === 7) {
-        document.getElementById('nextBtn').classList.add('hidden');
-        document.getElementById('submitBtn').classList.remove('hidden');
-      } else {
-        document.getElementById('nextBtn').classList.remove('hidden');
-        document.getElementById('submitBtn').classList.add('hidden');
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function goToStep(num) {
-      showStep(num);
-    }
-    function nextStep() {
-      if (currentStep < 7) showStep(currentStep + 1);
-    }
-    function prevStep() {
-      if (currentStep > 1) showStep(currentStep - 1);
-    }
-
-    // 4. STATİK VE DİNAMİK ALANLARIN OLUŞTURULMASI
-    function buildHastaliklarTable() {
-      const tbody = document.getElementById('hastaliklarTableBody');
-      tbody.innerHTML = hastalikListesi.map((h, i) => `
-        <tr class="hover:bg-gray-50">
-          <td class="p-2 font-medium text-gray-800">${h}</td>
-          <td class="p-2 text-center">
-            <input type="radio" name="hastalik_${i}" value="Şu anda" class="text-klinik-500 w-4 h-4">
-          </td>
-          <td class="p-2 text-center">
-            <input type="radio" name="hastalik_${i}" value="Geçmişte" class="text-klinik-500 w-4 h-4">
-          </td>
-          <td class="p-2 text-center">
-            <input type="radio" name="hastalik_${i}" value="Yok" class="text-klinik-500 w-4 h-4" checked>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function buildSkalaInputs() {
-      const container = document.getElementById('skalaContainer');
-      const ratings = ["-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-      container.innerHTML = skalaAlanlari.map(item => `
-        <div class="bg-gray-50 p-2.5 rounded-lg border flex flex-col md:flex-row md:items-center justify-between gap-2">
-          <span class="text-xs font-semibold text-gray-800 w-40">${item.label} *</span>
-          <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 md:pb-0">
-            ${ratings.map(r => `
-              <label class="flex flex-col items-center justify-center min-w-[28px] h-8 border rounded cursor-pointer bg-white text-[11px] font-medium hover:border-klinik-500">
-                <input type="radio" name="${item.key}" value="${r}" class="hidden peer">
-                <span class="peer-checked:bg-klinik-500 peer-checked:text-white w-full h-full flex items-center justify-center rounded">${r}</span>
-              </label>
+    function initLifeScales() {
+      const container = document.getElementById('lifeScaleContainer');
+      container.innerHTML = lifeScaleItems.map(item => `
+        <div class="border border-slate-100 p-2.5 rounded-lg bg-slate-50/50">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-bold text-slate-700">${item.label} *</span>
+            <span class="text-[11px] font-semibold text-[#587c29]" id="scaleVal_${item.id}">Seçilmedi</span>
+          </div>
+          <div class="flex flex-wrap gap-1">
+            <button type="button" onclick="setScaleValue('${item.id}', '-')" class="scale-btn w-7 h-7 text-xs border rounded bg-white hover:bg-slate-100 font-bold" data-key="${item.id}" data-val="-">-</button>
+            ${[1,2,3,4,5,6,7,8,9,10].map(n => `
+              <button type="button" onclick="setScaleValue('${item.id}', '${n}')" class="scale-btn w-7 h-7 text-xs border rounded bg-white hover:bg-slate-100 font-bold" data-key="${item.id}" data-val="${n}">${n}</button>
             `).join('')}
           </div>
         </div>
       `).join('');
     }
 
-    // Dinamik Satır Ekleme Motoru
-    function addDynamicRow(tableId, type) {
-      const tbody = document.getElementById(tableId);
-      const row = document.createElement('tr');
-      row.className = "border-b text-xs hover:bg-gray-50";
-
-      if (type === 'saglikSorun') {
-        row.innerHTML = `
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="Sorun / Şikayet"></td>
-          <td class="p-2">
-            <select class="w-full border p-1.5 rounded">
-              <option>Hafif</option><option>Orta</option><option>Ağır</option>
-            </select>
-          </td>
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="Uygulanan tedavi"></td>
-          <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); triggerAutoSave();" class="text-red-500 font-bold px-2 py-1">×</button></td>
-        `;
-      } else if (type === 'ilac' || type === 'takviye') {
-        row.innerHTML = `
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="İlaç/Takviye adı"></td>
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="Doz"></td>
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="Başlangıç"></td>
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="Kullanma nedeni"></td>
-          <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); triggerAutoSave();" class="text-red-500 font-bold px-2 py-1">×</button></td>
-        `;
-      } else if (type === 'aile') {
-        row.innerHTML = `
-          <td class="p-2">
-            <select class="w-full border p-1.5 rounded">
-              <option>Anne</option><option>Baba</option><option>Kardeş</option><option>Büyükanne</option><option>Büyükbaba</option><option>Diğer</option>
-            </select>
-          </td>
-          <td class="p-2"><input type="number" class="w-full border p-1.5 rounded" placeholder="Yaş"></td>
-          <td class="p-2"><input type="number" class="w-full border p-1.5 rounded" placeholder="Vefat yaşı (varsa)"></td>
-          <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); triggerAutoSave();" class="text-red-500 font-bold px-2 py-1">×</button></td>
-        `;
-      } else if (type === 'urogenital') {
-        row.innerHTML = `
-          <td class="p-2"><input type="text" class="w-full border p-1.5 rounded" placeholder="Örn: Yanma, zorlanma..."></td>
-          <td class="p-2">
-            <select class="w-full border p-1.5 rounded">
-              <option>Hafif</option><option>Orta</option><option>Ağır</option>
-            </select>
-          </td>
-          <td class="p-2 text-center"><button type="button" onclick="this.closest('tr').remove(); triggerAutoSave();" class="text-red-500 font-bold px-2 py-1">×</button></td>
-        `;
-      }
-      tbody.appendChild(row);
-      triggerAutoSave();
-    }
-
-    // Sayfa 26-32 Dinamik Semptom Satırı
-    function addSymptomRow(containerId, optionsList) {
-      const container = document.getElementById(containerId);
-      const div = document.createElement('div');
-      div.className = "flex items-center gap-1.5";
-      div.innerHTML = `
-        <select class="border p-1.5 rounded text-xs flex-1">
-          <option value="">Seçiniz...</option>
-          ${optionsList.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-        </select>
-        <select class="border p-1.5 rounded text-xs w-20">
-          <option>Hafif</option><option>Orta</option><option>Ağır</option>
-        </select>
-        <button type="button" onclick="this.closest('div').remove(); triggerAutoSave();" class="text-red-500 font-bold px-1.5 text-sm">×</button>
-      `;
-      container.appendChild(div);
-      triggerAutoSave();
-    }
-
-    // 5. HASTA VERİTABANI & LOCALSTORAGE DEPOLAMA YÖNETİMİ
-    const STORAGE_KEY = 'ayse_betul_klinik_hastalar';
-
-    function getStoredPatients() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) {
-        console.error(e);
-        return {};
-      }
-    }
-
-    function initializePatientStore() {
-      let patients = getStoredPatients();
-      const keys = Object.keys(patients);
+    function setScaleValue(id, val) {
+      if (!patientData.scales) patientData.scales = {};
+      patientData.scales[id] = val;
+      document.getElementById(`scaleVal_${id}`).innerText = val === '-' ? 'Uymuyor (-)' : `${val} / 10`;
       
-      if (keys.length === 0) {
-        // İlk varsayılan boş hasta
-        const newId = 'hasta_' + Date.now();
-        patients[newId] = {
-          id: newId,
-          name: "Yeni Hasta Taslağı",
-          updatedAt: new Date().toISOString(),
-          data: {}
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-        currentPatientId = newId;
-      } else {
-        currentPatientId = keys[0];
-      }
-
-      updatePatientDropdown();
-      loadPatientData(currentPatientId);
-
-      // Başlangıç için birkaç boş tablo satırı ekleyelim
-      if (document.getElementById('saglikSorunlariBody').children.length === 0) {
-        addDynamicRow('saglikSorunlariBody', 'saglikSorun');
-      }
-      if (document.getElementById('ilaclarBody').children.length === 0) {
-        addDynamicRow('ilaclarBody', 'ilac');
-      }
-      if (document.getElementById('takviyelerBody').children.length === 0) {
-        addDynamicRow('takviyelerBody', 'takviye');
-      }
-      if (document.getElementById('aileBody').children.length === 0) {
-        addDynamicRow('aileBody', 'aile');
-      }
+      document.querySelectorAll(`button[data-key="${id}"]`).forEach(btn => {
+        if (btn.getAttribute('data-val') === val) {
+          btn.className = 'scale-btn w-7 h-7 text-xs border rounded bg-[#587c29] text-white font-bold';
+        } else {
+          btn.className = 'scale-btn w-7 h-7 text-xs border rounded bg-white hover:bg-slate-100 font-bold text-slate-700';
+        }
+      });
+      triggerAutoSave();
     }
 
-    function updatePatientDropdown() {
-      const select = document.getElementById('patientSelect');
-      const patients = getStoredPatients();
-      select.innerHTML = Object.values(patients).map(p => `
-        <option value="${p.id}" ${p.id === currentPatientId ? 'selected' : ''}>
-          ${p.name || 'İsimsiz Hasta'} (${new Date(p.updatedAt).toLocaleDateString('tr-TR')})
-        </option>
+    function initDiseasesMatrix() {
+      const container = document.getElementById('diseasesContainer');
+      container.innerHTML = diseasesList.map((d, i) => `
+        <div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 text-xs">
+          <span class="font-bold text-slate-800 block mb-1.5 truncate" title="${d}">${d}</span>
+          <div class="flex justify-between gap-1 text-[11px]">
+            <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="dis_${i}" value="Şu anda" onchange="setDisease('${d}', 'Şu anda')"> <span>Şu an</span></label>
+            <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="dis_${i}" value="Geçmişte" onchange="setDisease('${d}', 'Geçmişte')"> <span>Geçmiş</span></label>
+            <label class="flex items-center space-x-1 cursor-pointer"><input type="radio" name="dis_${i}" value="Yok" onchange="setDisease('${d}', 'Yok')"> <span>Yok</span></label>
+          </div>
+        </div>
       `).join('');
-
-      select.onchange = function() {
-        switchPatient(this.value);
-      };
     }
 
-    function createNewPatientPrompt() {
-      const name = prompt("Lütfen yeni hastanın Adını ve Soyadını giriniz:", "");
-      if (name && name.trim() !== "") {
-        const newId = 'hasta_' + Date.now();
-        const patients = getStoredPatients();
-        patients[newId] = {
-          id: newId,
-          name: name.trim(),
-          updatedAt: new Date().toISOString(),
-          data: { adSoyad: name.trim() }
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-        currentPatientId = newId;
-        updatePatientDropdown();
-        loadPatientData(newId);
-        showStep(1);
-      }
+    function setDisease(name, status) {
+      if (!patientData.diseases) patientData.diseases = {};
+      patientData.diseases[name] = status;
+      triggerAutoSave();
     }
 
-    function switchPatient(patientId) {
-      savePatientData(false); // mevcut hastayı kaydet
-      currentPatientId = patientId;
-      loadPatientData(patientId);
-    }
+    function updateBristolCard(radio) {
+      patientData[radio.name] = radio.value;
+      triggerAutoSave();
 
-    // Formu serileştirme ve kaydetme
-    function savePatientData(showAlert = false) {
-      if (!currentPatientId) return;
-      const patients = getStoredPatients();
-      const form = document.getElementById('anamnezForm');
-      const formData = new FormData(form);
-      const dataObj = {};
+      document.querySelectorAll('.bristol-card').forEach(card => {
+        const input = card.querySelector('input');
+        const isTip4 = input.value.includes('Tip 4');
 
-      formData.forEach((value, key) => {
-        dataObj[key] = value;
-      });
-
-      // Checkboxları da al
-      form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-        dataObj[cb.name] = cb.checked;
-      });
-
-      // İsim güncellemesi
-      const patientName = dataObj.adSoyad ? dataObj.adSoyad.trim() : "İsimsiz Hasta";
-
-      patients[currentPatientId] = {
-        id: currentPatientId,
-        name: patientName,
-        updatedAt: new Date().toISOString(),
-        data: dataObj
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(patients));
-      updatePatientDropdown();
-
-      // UI geri bildirimi
-      const badge = document.getElementById('autoSaveBadge');
-      badge.innerHTML = `<i class="fa-solid fa-check text-green-600"></i> Kaydedildi (${new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})})`;
-
-      if (showAlert) {
-        showCustomAlert("Hasta formu başarıyla kaydedildi!");
-      }
-    }
-
-    function loadPatientData(patientId) {
-      const patients = getStoredPatients();
-      const patient = patients[patientId];
-      if (!patient || !patient.data) return;
-
-      const form = document.getElementById('anamnezForm');
-      form.reset();
-
-      const data = patient.data;
-      Object.keys(data).forEach(key => {
-        const el = form.elements[key];
-        if (el) {
-          if (el.type === 'checkbox') {
-            el.checked = !!data[key];
-          } else if (el instanceof RadioNodeList) {
-            el.value = data[key];
+        if (input.checked) {
+          card.classList.add('ring-2', 'ring-[#587c29]', 'bg-[#587c29]/5');
+        } else {
+          card.classList.remove('ring-2', 'ring-[#587c29]', 'bg-[#587c29]/5');
+          if (isTip4) {
+            card.className = "bristol-card cursor-pointer border-2 border-emerald-400 bg-emerald-50/40 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs";
           } else {
-            el.value = data[key];
+            card.className = "bristol-card cursor-pointer border border-slate-200 bg-white hover:border-amber-400 rounded-xl p-3 flex flex-col items-center text-center transition shadow-2xs";
           }
         }
       });
     }
 
-    // 6. CANLI OTOMATİK KAYIT (AUTO-SAVE) DİNLEYİCİLERİ
-    let saveTimeout = null;
+    // HASTA VE LOCALSTORAGE YÖNETİMİ
+    function initPatientSystem() {
+      let patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
+      if (patients.length === 0) {
+        const initialId = 'pt_' + Date.now();
+        patients.push({ id: initialId, name: 'Yeni Hasta' });
+        localStorage.setItem('ft_patient_list', JSON.stringify(patients));
+        currentPatientId = initialId;
+      } else {
+        currentPatientId = localStorage.getItem('ft_active_patient_id') || patients[0].id;
+      }
+      localStorage.setItem('ft_active_patient_id', currentPatientId);
+      renderPatientDropdown();
+      loadPatientData(currentPatientId);
+    }
+
+    function renderPatientDropdown() {
+      const selector = document.getElementById('patientSelector');
+      const patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
+      selector.innerHTML = patients.map(p => `
+        <option value="${p.id}" ${p.id === currentPatientId ? 'selected' : ''}>${p.name || 'İsimsiz Hasta'}</option>
+      `).join('');
+    }
+
+    function createNewPatient() {
+      const newId = 'pt_' + Date.now();
+      let patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
+      patients.unshift({ id: newId, name: 'Yeni Hasta' });
+      localStorage.setItem('ft_patient_list', JSON.stringify(patients));
+      currentPatientId = newId;
+      localStorage.setItem('ft_active_patient_id', newId);
+      renderPatientDropdown();
+      loadPatientData(newId);
+      goToTab(0);
+    }
+
+    function deleteCurrentPatient() {
+      let patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
+      const current = patients.find(p => p.id === currentPatientId);
+      const name = current ? current.name : 'Bu hasta';
+
+      if (!confirm(`"${name}" kaydını ve tüm form bilgilerini kalıcı olarak silmek istediğinize emin misiniz?`)) return;
+
+      patients = patients.filter(p => p.id !== currentPatientId);
+      localStorage.removeItem(`ft_data_${currentPatientId}`);
+
+      if (patients.length === 0) {
+        localStorage.removeItem('ft_patient_list');
+        initPatientSystem();
+      } else {
+        localStorage.setItem('ft_patient_list', JSON.stringify(patients));
+        currentPatientId = patients[0].id;
+        localStorage.setItem('ft_active_patient_id', currentPatientId);
+        renderPatientDropdown();
+        loadPatientData(currentPatientId);
+      }
+    }
+
+    function switchPatient(id) {
+      currentPatientId = id;
+      localStorage.setItem('ft_active_patient_id', id);
+      loadPatientData(id);
+    }
+
+    function loadPatientData(id) {
+      const saved = localStorage.getItem(`ft_data_${id}`);
+      patientData = saved ? JSON.parse(saved) : {};
+      
+      document.getElementById('anamnezForm').reset();
+
+      for (const [key, val] of Object.entries(patientData)) {
+        const el = document.querySelector(`[name="${key}"]`);
+        if (el) {
+          if (el.type === 'checkbox') el.checked = Boolean(val);
+          else if (el.type !== 'radio') el.value = val;
+        }
+      }
+
+      document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        if (patientData[radio.name] === radio.value) {
+          radio.checked = true;
+          if (radio.name === 'bristolTipi') updateBristolCard(radio);
+        }
+      });
+
+      if (patientData.scales) {
+        for (const [key, val] of Object.entries(patientData.scales)) {
+          setScaleValue(key, val);
+        }
+      }
+
+      loadAllDynamicTables();
+
+      document.getElementById('printPatientName').innerText = `Hasta: ${patientData.adSoyad || 'Belirtilmedi'}`;
+      document.getElementById('printDate').innerText = `Tarih: ${new Date().toLocaleDateString('tr-TR')}`;
+    }
+
     function triggerAutoSave() {
-      clearTimeout(saveTimeout);
-      const badge = document.getElementById('autoSaveBadge');
-      badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-500"></i> Kaydediliyor...`;
-      saveTimeout = setTimeout(() => {
-        savePatientData(false);
-      }, 700);
-    }
+      localStorage.setItem(`ft_data_${currentPatientId}`, JSON.stringify(patientData));
+      
+      if (patientData.adSoyad) {
+        let patients = JSON.parse(localStorage.getItem('ft_patient_list') || '[]');
+        const idx = patients.findIndex(p => p.id === currentPatientId);
+        if (idx !== -1 && patients[idx].name !== patientData.adSoyad) {
+          patients[idx].name = patientData.adSoyad;
+          localStorage.setItem('ft_patient_list', JSON.stringify(patients));
+          renderPatientDropdown();
+        }
+      }
 
-    function setupAutoSaveListeners() {
-      const form = document.getElementById('anamnezForm');
-      form.addEventListener('input', triggerAutoSave);
-      form.addEventListener('change', triggerAutoSave);
-    }
-
-    // 7. TAMAMLAMA VE BİLDİRİM
-    function finishForm() {
-      savePatientData(false);
-      showCustomAlert("Form başarıyla tamamlandı ve arşivlendi. İsterseniz 'Yazdır / PDF' butonuyla medikal rapor çıktısını alabilirsiniz.");
-    }
-
-    function showCustomAlert(msg) {
-      const div = document.createElement('div');
-      div.className = "fixed bottom-5 right-5 z-50 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-gray-700 animate-bounce";
-      div.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i><span class="text-sm font-medium">${msg}</span>`;
-      document.body.appendChild(div);
+      const status = document.getElementById('saveStatus');
+      status.innerHTML = '<i class="fa-solid fa-rotate text-amber-500 animate-spin"></i><span class="hidden md:inline">Kaydediliyor...</span>';
       setTimeout(() => {
-        div.remove();
-      }, 3500);
+        status.innerHTML = '<i class="fa-solid fa-circle-check text-[#587c29]"></i><span class="hidden md:inline">Kaydedildi</span>';
+      }, 300);
+    }
+
+    function updateField(el) {
+      patientData[el.name] = el.value;
+      if (el.name === 'adSoyad') {
+        document.getElementById('printPatientName').innerText = `Hasta: ${el.value}`;
+      }
+      triggerAutoSave();
+    }
+
+    function updateCheckbox(el) {
+      patientData[el.name] = el.checked;
+      triggerAutoSave();
+    }
+
+    function updateRadio(el) {
+      patientData[el.name] = el.value;
+      triggerAutoSave();
+    }
+
+    // DİNAMİK TABLOLAR
+    function addDynamicRow(tableId, fields, values = {}) {
+      const tbody = document.getElementById(tableId).querySelector('tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        ${fields.map(f => `
+          <td class="p-1.5 border-b">
+            ${f === 'siddet' ? `
+              <select class="w-full p-1.5 border rounded text-xs" onchange="saveDynamicTable('${tableId}')">
+                <option ${values[f] === 'Hafif' ? 'selected' : ''}>Hafif</option>
+                <option ${values[f] === 'Orta' ? 'selected' : ''}>Orta</option>
+                <option ${values[f] === 'Ağır' ? 'selected' : ''}>Ağır</option>
+              </select>
+            ` : `
+              <input type="text" value="${values[f] || ''}" class="w-full p-1.5 border rounded text-xs" oninput="saveDynamicTable('${tableId}')">
+            `}
+          </td>
+        `).join('')}
+        <td class="p-1.5 border-b text-center">
+          <button type="button" onclick="this.closest('tr').remove(); saveDynamicTable('${tableId}')" class="text-rose-500 hover:text-rose-700 font-bold">×</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      saveDynamicTable(tableId);
+    }
+
+    function saveDynamicTable(tableId) {
+      const rows = [];
+      document.getElementById(tableId).querySelectorAll('tbody tr').forEach(tr => {
+        const inputs = tr.querySelectorAll('input, select');
+        if (inputs.length > 0) {
+          const rowData = Array.from(inputs).map(inp => inp.value);
+          rows.push(rowData);
+        }
+      });
+      if (!patientData.tables) patientData.tables = {};
+      patientData.tables[tableId] = rows;
+      triggerAutoSave();
+    }
+
+    function addSystemComplaintRow(tableId, options, selectedVal = '', selectedSeverity = 'Hafif') {
+      const tbody = document.getElementById(tableId).querySelector('tbody');
+      const tr = document.createElement('tr');
+      tr.className = 'border-b';
+      tr.innerHTML = `
+        <td class="p-1">
+          <select class="w-full border rounded p-1 text-[11px]" onchange="saveSystemComplaints('${tableId}')">
+            <option value="">Seçiniz...</option>
+            ${options.map(opt => `<option value="${opt}" ${opt === selectedVal ? 'selected' : ''}>${opt}</option>`).join('')}
+          </select>
+        </td>
+        <td class="p-1 w-24">
+          <select class="w-full border rounded p-1 text-[11px]" onchange="saveSystemComplaints('${tableId}')">
+            <option ${selectedSeverity === 'Hafif' ? 'selected' : ''}>Hafif</option>
+            <option ${selectedSeverity === 'Orta' ? 'selected' : ''}>Orta</option>
+            <option ${selectedSeverity === 'Ağır' ? 'selected' : ''}>Ağır</option>
+          </select>
+        </td>
+        <td class="p-1 w-6 text-center">
+          <button type="button" onclick="this.closest('tr').remove(); saveSystemComplaints('${tableId}')" class="text-rose-500 font-bold">×</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      saveSystemComplaints(tableId);
+    }
+
+    function saveSystemComplaints(tableId) {
+      const list = [];
+      document.getElementById(tableId).querySelectorAll('tbody tr').forEach(tr => {
+        const selects = tr.querySelectorAll('select');
+        if (selects[0].value) {
+          list.push({ item: selects[0].value, severity: selects[1].value });
+        }
+      });
+      if (!patientData.complaints) patientData.complaints = {};
+      patientData.complaints[tableId] = list;
+      triggerAutoSave();
+    }
+
+    function addFamilyRow(data = {}) {
+      const tbody = document.getElementById('aileTable').querySelector('tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="p-1.5 border-b">
+          <select class="w-full border p-1.5 rounded text-xs" onchange="saveFamilyTable()">
+            ${['Anne', 'Baba', 'Kardeş', 'Çocuk', 'Dede/Nine', 'Diğer'].map(rel => `<option ${data.rel === rel ? 'selected' : ''}>${rel}</option>`).join('')}
+          </select>
+        </td>
+        <td class="p-1.5 border-b">
+          <input type="number" value="${data.age || ''}" class="w-full border p-1.5 rounded text-xs" oninput="saveFamilyTable()">
+        </td>
+        <td class="p-1.5 border-b">
+          <input type="number" value="${data.deathAge || ''}" class="w-full border p-1.5 rounded text-xs" oninput="saveFamilyTable()">
+        </td>
+        <td class="p-1.5 border-b text-center">
+          <button type="button" onclick="this.closest('tr').remove(); saveFamilyTable()" class="text-rose-500 font-bold">×</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      saveFamilyTable();
+    }
+
+    function saveFamilyTable() {
+      const rows = [];
+      document.getElementById('aileTable').querySelectorAll('tbody tr').forEach(tr => {
+        const rel = tr.querySelector('select').value;
+        const inputs = tr.querySelectorAll('input');
+        rows.push({ rel, age: inputs[0].value, deathAge: inputs[1].value });
+      });
+      if (!patientData.family) patientData.family = [];
+      patientData.family = rows;
+      triggerAutoSave();
+    }
+
+    function loadAllDynamicTables() {
+      ['sorunlarTable', 'ilaclarTable', 'takviyelerTable', 'urogenitalTable', 'tirnakTable', 'urinerTable', 'solunumTable', 'sindirimTable', 'ciltTable', 'kurulukTable', 'aileTable'].forEach(id => {
+        const tbody = document.getElementById(id)?.querySelector('tbody');
+        if (tbody) tbody.innerHTML = '';
+      });
+
+      if (patientData.tables) {
+        if (patientData.tables.sorunlarTable) {
+          patientData.tables.sorunlarTable.forEach(r => addDynamicRow('sorunlarTable', ['sorun', 'siddet', 'tedavi'], { sorun: r[0], siddet: r[1], tedavi: r[2] }));
+        }
+        if (patientData.tables.ilaclarTable) {
+          patientData.tables.ilaclarTable.forEach(r => addDynamicRow('ilaclarTable', ['ilac', 'doz', 'tarih', 'neden'], { ilac: r[0], doz: r[1], tarih: r[2], neden: r[3] }));
+        }
+        if (patientData.tables.takviyelerTable) {
+          patientData.tables.takviyelerTable.forEach(r => addDynamicRow('takviyelerTable', ['isim', 'doz', 'tarih', 'neden'], { isim: r[0], doz: r[1], tarih: r[2], neden: r[3] }));
+        }
+      }
+
+      if (patientData.family) {
+        patientData.family.forEach(f => addFamilyRow(f));
+      }
+    }
+
+    // PDF OLARAK AKTARMA (TÜM FORMU EKSİKSİZ YAZDIRIR)
+    function exportAsPDF() {
+      const sections = document.querySelectorAll('.form-section');
+      sections.forEach(sec => sec.classList.remove('hidden'));
+
+      const patientName = patientData.adSoyad || 'isimsiz_hasta';
+      document.getElementById('printPatientName').innerText = `Hasta: ${patientName}`;
+      document.getElementById('printDate').innerText = `Tarih: ${new Date().toLocaleDateString('tr-TR')}`;
+
+      window.print();
+
+      sections.forEach((sec, idx) => {
+        sec.classList.toggle('hidden', idx !== currentStep);
+      });
+    }
+
+    // SEKMELER & ADIM GEZİNTİSİ
+    function goToTab(stepIndex) {
+      currentStep = stepIndex;
+      const sections = document.querySelectorAll('.form-section');
+      sections.forEach((sec, idx) => {
+        sec.classList.toggle('hidden', idx !== currentStep);
+      });
+
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach((tab, idx) => {
+        const numBadge = tab.querySelector('.step-num');
+        const icon = tab.querySelector('i');
+
+        if (idx === currentStep) {
+          tab.className = 'tab-btn px-4 py-2 rounded-xl border-2 flex items-center space-x-2 transition shadow-sm bg-[#587c29] text-white border-[#486621] font-bold';
+          if (numBadge) numBadge.className = 'step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-white text-[#587c29] font-bold';
+          if (icon) icon.className = icon.className.replace('text-slate-500', 'text-white');
+        } else {
+          tab.className = 'tab-btn px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center space-x-2 transition shadow-sm';
+          if (numBadge) numBadge.className = 'step-num w-5 h-5 rounded-full flex items-center justify-center text-[11px] bg-slate-100 text-slate-600 font-bold';
+          if (icon) icon.className = icon.className.replace('text-white', 'text-slate-500');
+        }
+      });
+
+      document.getElementById('prevBtn').disabled = currentStep === 0;
+      document.getElementById('nextBtn').innerText = currentStep === totalSteps - 1 ? 'Formu Tamamla' : 'Sonraki Bölüm';
+      document.getElementById('stepCounter').innerText = `Bölüm ${currentStep + 1} / ${totalSteps}`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changeStep(direction) {
+      const next = currentStep + direction;
+      if (next >= 0 && next < totalSteps) {
+        goToTab(next);
+      } else if (next === totalSteps) {
+        exportAsPDF();
+      }
     }
   </script>
 </body>
